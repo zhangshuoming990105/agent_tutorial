@@ -1,0 +1,24 @@
+__pycache__/
+*.pyc
+*.pyo
+
+# Compiled binaries from test tasks
+*.o
+*.so
+*.dylib
+
+# Shell policy (runtime state, not source)
+.shell_policy.json
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
