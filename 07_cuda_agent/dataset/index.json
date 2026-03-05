@@ -1,0 +1,1682 @@
+{
+  "level1/001": {
+    "uuid": "04f69595-6a2e-40bc-aed8-2121a26749ee",
+    "description": "Performs a depthwise 2D convolution with asymmetric input and asymmetric kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 15.28,
+    "speedup_torch_baseline": 2.59
+  },
+  "level1/002": {
+    "uuid": "07f3e8c8-18b6-4690-887e-dac5159fc85a",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B) with irregular shapes",
+    "score": "3.0",
+    "speedup_torch_compile": 1.7,
+    "speedup_torch_baseline": 1.7
+  },
+  "level1/003": {
+    "uuid": "082bf36a-600b-4ce5-9259-02b360374b88",
+    "description": "Performs a transposed 2D convolution with a square input and an asymmetric kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 6.55,
+    "speedup_torch_baseline": 6.17
+  },
+  "level1/004": {
+    "uuid": "082f90c5-69d3-4a69-9154-e01465238c77",
+    "description": "A simple model that performs a cumulative sum (prefix sum) operation along a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.06,
+    "speedup_torch_baseline": 2.87
+  },
+  "level1/005": {
+    "uuid": "0a5705f4-0ce4-43fc-a63f-62ef17647bb8",
+    "description": "Performs a standard 3D convolution operation with a square input and an asymmetric kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.07,
+    "speedup_torch_baseline": 2.07
+  },
+  "level1/006": {
+    "uuid": "0ea73748-6124-4550-a774-dce042df3d81",
+    "description": "Simple model that performs Max reduction over a specific dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.02,
+    "speedup_torch_baseline": 1.85
+  },
+  "level1/007": {
+    "uuid": "0f50a415-347f-40b4-be4c-fecde9aee90c",
+    "description": "Simple model that performs matrix multiplication (C = A * B) for upper triangular matrices.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.53,
+    "speedup_torch_baseline": 2.55
+  },
+  "level1/008": {
+    "uuid": "0fb13584-90fe-4d73-aec7-fe96c61fdaa1",
+    "description": "Performs a depthwise-separable 2D convolution operation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.57,
+    "speedup_torch_baseline": 1.39
+  },
+  "level1/009": {
+    "uuid": "10e71ddb-e1d6-462f-8526-f61d0d037c2b",
+    "description": "",
+    "score": "4.0",
+    "speedup_torch_compile": 5.07,
+    "speedup_torch_baseline": 4.97
+  },
+  "level1/010": {
+    "uuid": "1440aef0-48eb-445e-8a02-2928000c3510",
+    "description": "Performs a 2D transposed convolution operation with asymmetric input, asymmetric kernel,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.88,
+    "speedup_torch_baseline": 1.88
+  },
+  "level1/011": {
+    "uuid": "14c90f01-23c3-4195-8d98-4af45d718e08",
+    "description": "Performs a depthwise 2D convolution with a square input and an asymmetric kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 6.12,
+    "speedup_torch_baseline": 3.23
+  },
+  "level1/012": {
+    "uuid": "18e08d3b-6f05-4758-9e53-51d7d17f9447",
+    "description": "Simple model that performs 1D Average Pooling.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.23,
+    "speedup_torch_baseline": 5.49
+  },
+  "level1/013": {
+    "uuid": "1a7cdeae-bf0d-4e0c-8166-34f7110d5f25",
+    "description": "Simple model that performs a matrix multiplication of a diagonal matrix with another matrix.",
+    "score": "4.0",
+    "speedup_torch_compile": 117.6,
+    "speedup_torch_baseline": 117.72
+  },
+  "level1/014": {
+    "uuid": "1ca91114-d480-474a-adc8-7d6722dfcc64",
+    "description": "Performs a standard 3D convolution operation with asymmetric input and kernel sizes.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.06,
+    "speedup_torch_baseline": 2.06
+  },
+  "level1/015": {
+    "uuid": "2228cd8c-64c2-4460-a5df-482fc46cc3ad",
+    "description": "Performs a standard 1D convolution operation with asymmetric input and a square kernel, potentially dilated and strided.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.46,
+    "speedup_torch_baseline": 2.46
+  },
+  "level1/016": {
+    "uuid": "29085c28-9bba-4532-98c2-427a4684cbfe",
+    "description": "Simple model that performs a single square matrix multiplication (C = A * B)",
+    "score": "3.5",
+    "speedup_torch_compile": 2.6,
+    "speedup_torch_baseline": 2.6
+  },
+  "level1/017": {
+    "uuid": "29311705-8645-4034-bd17-e879eead6112",
+    "description": "Performs a standard 3D convolution operation with an asymmetric input and a square kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.58,
+    "speedup_torch_baseline": 3.58
+  },
+  "level1/018": {
+    "uuid": "299d5986-54a4-44de-ae58-87ed9d7168f0",
+    "description": "Performs a 2D transposed convolution operation with asymmetric input and square kernel, supporting dilation, padding, and stride.",
+    "score": "4.0",
+    "speedup_torch_compile": 6.97,
+    "speedup_torch_baseline": 7.02
+  },
+  "level1/019": {
+    "uuid": "29a6a399-d34a-4969-824e-afb3789f5c49",
+    "description": "Performs 3D tensor-matrix multiplication.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.12,
+    "speedup_torch_baseline": 3.12
+  },
+  "level1/020": {
+    "uuid": "2d5b886c-3087-4f1c-9bbc-bfd2d4daf703",
+    "description": "Simple model that performs a HardSigmoid activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.08
+  },
+  "level1/021": {
+    "uuid": "2e726a29-6648-430d-af6c-7d3cf628a4a6",
+    "description": "Performs a 3D transposed convolution operation with asymmetric input and kernel, and optional stride.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.95,
+    "speedup_torch_baseline": 2.95
+  },
+  "level1/022": {
+    "uuid": "300fb728-29fa-4f75-a4d5-b73afdaec227",
+    "description": "Simple model that performs an ELU activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.1,
+    "speedup_torch_baseline": 1.09
+  },
+  "level1/023": {
+    "uuid": "319329f3-9aa0-4dd8-a5fb-053a1e35a3aa",
+    "description": "Performs a 2D transposed convolution operation with asymmetric input and kernel, with optional padding.",
+    "score": "4.0",
+    "speedup_torch_compile": 6.36,
+    "speedup_torch_baseline": 5.69
+  },
+  "level1/024": {
+    "uuid": "38c59828-426b-4ab7-9542-1f1769710d15",
+    "description": "Simple model that performs a Softmax activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 1.43
+  },
+  "level1/025": {
+    "uuid": "3988b820-8c3e-45dc-9007-3352081aa574",
+    "description": "Performs a standard 1D convolution operation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.13,
+    "speedup_torch_baseline": 2.13
+  },
+  "level1/026": {
+    "uuid": "3c30dec3-e333-4a12-97b1-93f3db707624",
+    "description": "Performs batched matrix multiplication (C = A * B) where A, B, and C have the same batch dimension.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.66,
+    "speedup_torch_baseline": 2.66
+  },
+  "level1/027": {
+    "uuid": "3e29a103-84d1-432c-9de9-ddff371d09a9",
+    "description": "Simple model that performs matrix-vector multiplication (C = A * B).",
+    "score": "3.0",
+    "speedup_torch_compile": 1.4,
+    "speedup_torch_baseline": 1.4
+  },
+  "level1/028": {
+    "uuid": "3e617170-732e-412b-84a0-388aa338466d",
+    "description": "Performs a standard 3D convolution operation with square input and square kernel.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.65,
+    "speedup_torch_baseline": 1.65
+  },
+  "level1/029": {
+    "uuid": "3fa51c76-1b17-43f1-a247-7188082eb88a",
+    "description": "A model that performs a reverse cumulative sum operation along a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.53,
+    "speedup_torch_baseline": 3.3
+  },
+  "level1/030": {
+    "uuid": "41b681ad-9048-4cd7-aa65-5012590bf064",
+    "description": "Simple model that performs Group Normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.1,
+    "speedup_torch_baseline": 2.32
+  },
+  "level1/031": {
+    "uuid": "42280948-d4a3-4c24-bca3-005dad554ca8",
+    "description": "Performs a pointwise 2D convolution operation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.44,
+    "speedup_torch_baseline": 1.65
+  },
+  "level1/032": {
+    "uuid": "42d06f9e-3563-45ba-9efd-a0eb5213097f",
+    "description": "Simple model that performs Instance Normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.09,
+    "speedup_torch_baseline": 1.95
+  },
+  "level1/033": {
+    "uuid": "447d5699-c0d6-424f-96a8-091fec9594e0",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B)",
+    "score": "3.5",
+    "speedup_torch_compile": 2.67,
+    "speedup_torch_baseline": 2.67
+  },
+  "level1/034": {
+    "uuid": "45a35030-50d3-4b03-88d2-dc76e333afbb",
+    "description": "Performs a transposed 3D convolution with square input and square kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.97,
+    "speedup_torch_baseline": 3.97
+  },
+  "level1/035": {
+    "uuid": "4e7762e0-7462-4e1f-826b-94e16b56db34",
+    "description": "Performs a transposed 2D convolution with square input and square kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.65,
+    "speedup_torch_baseline": 4.95
+  },
+  "level1/036": {
+    "uuid": "4f394fad-273f-407f-ba63-c02aabfb7491",
+    "description": "Performs a standard 2D convolution operation with asymmetric input and kernel sizes.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.94,
+    "speedup_torch_baseline": 2.86
+  },
+  "level1/037": {
+    "uuid": "55692717-b2bd-4010-a362-c7ea117c9891",
+    "description": "Performs a transposed 1D convolution operation.",
+    "score": "3.0",
+    "speedup_torch_compile": 2.0,
+    "speedup_torch_baseline": 2.0
+  },
+  "level1/038": {
+    "uuid": "5602291e-32dc-435b-92a5-e191e828a8a6",
+    "description": "Simple model that performs min reduction over a specific dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.03,
+    "speedup_torch_baseline": 1.74
+  },
+  "level1/039": {
+    "uuid": "5643f55f-2f80-4831-934e-6093cca6df77",
+    "description": "A model that performs a cumulative product operation along a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 2.87
+  },
+  "level1/041": {
+    "uuid": "57e58b64-15a1-46de-88bc-d39da037486f",
+    "description": "Performs a transposed 3D convolution operation with asymmetric input and kernel sizes.",
+    "score": "4.0",
+    "speedup_torch_compile": 7.6,
+    "speedup_torch_baseline": 7.59
+  },
+  "level1/042": {
+    "uuid": "5c8d5360-9ced-40c1-98fe-6bce97ba9c56",
+    "description": "A model that computes the Mean Squared Error loss for regression tasks.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 3.27
+  },
+  "level1/043": {
+    "uuid": "5d360c70-222c-4757-ae93-77dfdfe02500",
+    "description": "Simple model that performs a Sigmoid activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.12
+  },
+  "level1/044": {
+    "uuid": "5dfe92d5-4881-4f0c-90e8-10e73f2e9b5e",
+    "description": "Simple model that performs a LeakyReLU activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.07
+  },
+  "level1/045": {
+    "uuid": "6006b639-7bf5-4743-995b-ec159bbede97",
+    "description": "A model that computes Cross Entropy Loss for multi-class classification tasks.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.16,
+    "speedup_torch_baseline": 9.95
+  },
+  "level1/046": {
+    "uuid": "600bc846-025a-45cc-a11b-f554a8a3b8a6",
+    "description": "Simple model that performs a matrix multiplication (C = A * B) where A and B are lower triangular matrices.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.59,
+    "speedup_torch_baseline": 2.6
+  },
+  "level1/047": {
+    "uuid": "62337aa5-c96f-43a4-a679-bcb7ffdf35ec",
+    "description": "Simple model that performs a SELU activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.1,
+    "speedup_torch_baseline": 1.1
+  },
+  "level1/048": {
+    "uuid": "62f8fde1-1bba-4c5a-8be5-39605ee424cb",
+    "description": "Performs a standard 2D convolution operation with square input and asymmetric kernel, with dilation and padding.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.93,
+    "speedup_torch_baseline": 3.27
+  },
+  "level1/049": {
+    "uuid": "64435d55-5e19-4123-8d1e-55f1ade27141",
+    "description": "Performs a transposed 2D convolution operation with asymmetric input and kernel size.",
+    "score": "4.0",
+    "speedup_torch_compile": 9.8,
+    "speedup_torch_baseline": 9.65
+  },
+  "level1/050": {
+    "uuid": "64aa47c4-9afd-492b-a6d3-5c989a411939",
+    "description": "Performs a 3D transposed convolution operation with square input and square kernel,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.15,
+    "speedup_torch_baseline": 1.15
+  },
+  "level1/051": {
+    "uuid": "6733bb6d-c228-428d-b7b4-2e116f4ec45f",
+    "description": "Simple model that finds the index of the minimum value along a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.43,
+    "speedup_torch_baseline": 1.6
+  },
+  "level1/052": {
+    "uuid": "68177b72-b753-418f-a5cf-c263e7e980cf",
+    "description": "Implementation of the GELU activation function currently in Google BERT repo (identical to OpenAI GPT).",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 9.39
+  },
+  "level1/053": {
+    "uuid": "68fccb2a-17a7-43e7-98ab-0d39b411e516",
+    "description": "A model that performs a masked cumulative sum, only summing elements that satisfy a condition.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.13,
+    "speedup_torch_baseline": 4.72
+  },
+  "level1/054": {
+    "uuid": "6912ff35-e988-4d68-a85b-1678da1e1836",
+    "description": "A model that computes Hinge Loss for binary classification tasks.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.01,
+    "speedup_torch_baseline": 10.42
+  },
+  "level1/055": {
+    "uuid": "69513675-f437-4a6f-a60d-8404ae476ea2",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B)",
+    "score": "3.5",
+    "speedup_torch_compile": 2.75,
+    "speedup_torch_baseline": 2.75
+  },
+  "level1/056": {
+    "uuid": "6c55902c-e1ce-451f-9c33-ca06238f2993",
+    "description": "Simple model that performs Max Pooling 2D.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.5,
+    "speedup_torch_baseline": 3.32
+  },
+  "level1/057": {
+    "uuid": "70102ec9-ceae-410d-824e-0e3514aef047",
+    "description": "Simple model that performs Layer Normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.2,
+    "speedup_torch_baseline": 21.45
+  },
+  "level1/058": {
+    "uuid": "73f5f421-b004-456c-b871-64d50c7004ac",
+    "description": "Simple model that performs Argmax over a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 1.12
+  },
+  "level1/060": {
+    "uuid": "7dd335d2-4f27-4ea9-802e-e21394408beb",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.93,
+    "speedup_torch_baseline": 1.93
+  },
+  "level1/061": {
+    "uuid": "82717e9d-cb70-49d1-8564-8f81105fac4e",
+    "description": "Simple model that performs a Tanh activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.01,
+    "speedup_torch_baseline": 1.17
+  },
+  "level1/062": {
+    "uuid": "849910bb-3d96-418e-bf7f-ece8964bfaac",
+    "description": "Performs a transposed 1D convolution operation with asymmetric input and square kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 8.97,
+    "speedup_torch_baseline": 8.98
+  },
+  "level1/063": {
+    "uuid": "85af3ab1-de9d-46b6-b247-a4d8f2b4562b",
+    "description": "Performs a standard 2D convolution operation with an asymmetric input and a square kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.06,
+    "speedup_torch_baseline": 1.72
+  },
+  "level1/064": {
+    "uuid": "86df4c44-85eb-4159-a6e5-a2b7e7e59b22",
+    "description": "Simple model that performs a GELU activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.09,
+    "speedup_torch_baseline": 1.24
+  },
+  "level1/065": {
+    "uuid": "8a1730fd-656d-4f00-a89f-ec951355aea1",
+    "description": "Performs a transposed 1D convolution operation with square input and asymmetric kernel, optionally with dilation.",
+    "score": "4.0",
+    "speedup_torch_compile": 7.63,
+    "speedup_torch_baseline": 7.63
+  },
+  "level1/066": {
+    "uuid": "8c95302c-4dac-4491-acb2-b679d47f1448",
+    "description": "Performs a transposed 2D convolution with asymmetric input and a square kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 4.16,
+    "speedup_torch_baseline": 3.29
+  },
+  "level1/067": {
+    "uuid": "8d215683-cbb1-467a-8ad9-4bf75d504326",
+    "description": "Performs a standard 2D convolution operation with a square input and square kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.84,
+    "speedup_torch_baseline": 2.48
+  },
+  "level1/068": {
+    "uuid": "9123180a-e95c-4f28-a7d0-ce6e6122bff6",
+    "description": "Performs a depthwise 2D convolution with asymmetric input and square kernel.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.26,
+    "speedup_torch_baseline": 2.2
+  },
+  "level1/069": {
+    "uuid": "96c041a1-ddcc-4b44-8444-fdce5ec0606b",
+    "description": "Simple model that performs a Swish activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 2.6
+  },
+  "level1/070": {
+    "uuid": "96e72fc1-9930-4b58-a73d-2cde117d223f",
+    "description": "Performs a depthwise 2D convolution operation with square input and square kernel.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.09,
+    "speedup_torch_baseline": 1.91
+  },
+  "level1/071": {
+    "uuid": "9b69dda9-1425-4b87-9d9c-bfab2b9f6743",
+    "description": "Simple model that performs Batch Normalization.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.71
+  },
+  "level1/072": {
+    "uuid": "9e5b2531-5856-4f4d-8b72-9434c5aa7c0d",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B) with A and B being symmetric matrices.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.6,
+    "speedup_torch_baseline": 2.6
+  },
+  "level1/073": {
+    "uuid": "9f5f520d-3b0b-4cfc-865e-1fe16b965872",
+    "description": "Simple model that performs a Softsign activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 3.63
+  },
+  "level1/074": {
+    "uuid": "a1ee2a5f-9715-491c-a127-39df9117a688",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B) where one of the matrices is tall and skinny (M >> N or N >> M)",
+    "score": "3.5",
+    "speedup_torch_compile": 2.27,
+    "speedup_torch_baseline": 2.27
+  },
+  "level1/075": {
+    "uuid": "a69b9fa3-d4f1-422d-b38a-17988377e3a5",
+    "description": "Simple model that performs Max Pooling 3D.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.27,
+    "speedup_torch_baseline": 2.27
+  },
+  "level1/076": {
+    "uuid": "acca1c13-3dbe-489f-bc6e-2f8224d46dc9",
+    "description": "A model that computes Triplet Margin Loss for metric learning tasks.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.01,
+    "speedup_torch_baseline": 4.54
+  },
+  "level1/077": {
+    "uuid": "acd38914-2b29-4ad6-85d7-a9ccf1234dc8",
+    "description": "Simple model that performs a HardTanh activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.02,
+    "speedup_torch_baseline": 1.09
+  },
+  "level1/078": {
+    "uuid": "ad8256ce-cc9e-41d5-9b9c-def0aa7c783b",
+    "description": "A model that performs an exclusive cumulative sum (does not include the current element).",
+    "score": "3.0",
+    "speedup_torch_compile": 1.07,
+    "speedup_torch_baseline": 2.53
+  },
+  "level1/079": {
+    "uuid": "b1558526-be78-4347-8c9c-325859eeecb7",
+    "description": "Simple model that performs a ReLU activation.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.08
+  },
+  "level1/080": {
+    "uuid": "b1b8b412-3bca-4543-9882-946a74571028",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B)",
+    "score": "3.5",
+    "speedup_torch_compile": 2.67,
+    "speedup_torch_baseline": 2.67
+  },
+  "level1/081": {
+    "uuid": "ba686feb-b09c-46d7-a737-28c22269edab",
+    "description": "A model that computes Kullback-Leibler Divergence for comparing two distributions.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.68,
+    "speedup_torch_baseline": 5.78
+  },
+  "level1/082": {
+    "uuid": "bc49e9d4-eba4-4c62-90b4-57b1b1a4a0f1",
+    "description": "Simple model that performs sum reduction over a specified dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.03,
+    "speedup_torch_baseline": 1.02
+  },
+  "level1/083": {
+    "uuid": "bc4d7680-8377-4f4a-91f0-40a2ab98b1ed",
+    "description": "Performs a transposed 3D convolution operation with asymmetric input and a square kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.87,
+    "speedup_torch_baseline": 5.86
+  },
+  "level1/084": {
+    "uuid": "cced8a2b-0295-4eff-b98b-6568910ff6f9",
+    "description": "Simple model that performs a matrix-scalar multiplication (C = A * s)",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.07
+  },
+  "level1/085": {
+    "uuid": "d55abc35-04c3-4b7b-a4e1-f9d65dcbef89",
+    "description": "Simple model that performs 2D Average Pooling.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.26,
+    "speedup_torch_baseline": 1.26
+  },
+  "level1/086": {
+    "uuid": "d6575b00-80db-4f71-a115-201a5fd64895",
+    "description": "Simple model that performs a LogSoftmax activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 1.07
+  },
+  "level1/087": {
+    "uuid": "d795ae35-5ad1-4681-9d77-f1273fbcc63c",
+    "description": "Performs a 3D transposed convolution operation with asymmetric input and square kernel.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.98,
+    "speedup_torch_baseline": 1.98
+  },
+  "level1/088": {
+    "uuid": "dea3f389-7653-4a62-bf1c-a48654f25324",
+    "description": "Performs 4D tensor-matrix multiplication:",
+    "score": "3.5",
+    "speedup_torch_compile": 2.99,
+    "speedup_torch_baseline": 2.98
+  },
+  "level1/089": {
+    "uuid": "e3ca5003-87e1-48c7-b018-77ae6a2fa891",
+    "description": "Simple model that performs mean reduction over a specific dimension.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.08,
+    "speedup_torch_baseline": 1.08
+  },
+  "level1/090": {
+    "uuid": "ed234028-e20a-4960-9202-ad6517678632",
+    "description": "Simple model that performs a Softplus activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.07,
+    "speedup_torch_baseline": 1.74
+  },
+  "level1/091": {
+    "uuid": "f2fe0d33-8978-4116-9034-ef928ffff562",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B) with a large K dimension",
+    "score": "3.5",
+    "speedup_torch_compile": 2.08,
+    "speedup_torch_baseline": 2.07
+  },
+  "level1/092": {
+    "uuid": "f461d92f-196f-4f94-aa1e-47bea596f671",
+    "description": "Simple model that performs a single matrix multiplication (C = A * B) with a small K dimension",
+    "score": "3.5",
+    "speedup_torch_compile": 3.14,
+    "speedup_torch_baseline": 3.15
+  },
+  "level1/093": {
+    "uuid": "f747724a-b235-41ae-bf83-a27b5bfe799d",
+    "description": "A model that computes Smooth L1 (Huber) Loss for regression tasks.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.01,
+    "speedup_torch_baseline": 2.17
+  },
+  "level1/094": {
+    "uuid": "f8f94d30-2e4b-409e-92c9-49b831671ce8",
+    "description": "Simple model that performs 3D Average Pooling.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.55,
+    "speedup_torch_baseline": 2.55
+  },
+  "level1/095": {
+    "uuid": "fb79d40d-010d-43a0-809a-4ceab9a3308b",
+    "description": "Performs a standard 2D convolution operation with a square input and an asymmetric kernel.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.9,
+    "speedup_torch_baseline": 3.23
+  },
+  "level1/096": {
+    "uuid": "fbb7acac-2358-4ad7-9e14-f98bc2aa43a1",
+    "description": "Simple model that performs Max Pooling 1D.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.2,
+    "speedup_torch_baseline": 5.2
+  },
+  "level1/097": {
+    "uuid": "fbd571ca-d58f-4e0a-89e9-ca5bf12ab682",
+    "description": "Simple model that performs Frobenius norm normalization.",
+    "score": "2.5",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.87
+  },
+  "level1/098": {
+    "uuid": "fc145b02-42f4-4b3b-a085-866cc266c98a",
+    "description": "Simple model that performs L1 normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.16,
+    "speedup_torch_baseline": 2.14
+  },
+  "level1/099": {
+    "uuid": "ffa85eea-3580-4ccb-bc6a-49a7d541fd14",
+    "description": "Performs a transposed 3D convolution with a square input and an asymmetric kernel.",
+    "score": "4.0",
+    "speedup_torch_compile": 27.11,
+    "speedup_torch_baseline": 27.11
+  },
+  "level2/001": {
+    "uuid": "00b36d79-b753-4c50-ad33-5958a9718235",
+    "description": "Simple model that performs a matrix multiplication, scales the result, and applies batch normalization.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.23,
+    "speedup_torch_baseline": 2.28
+  },
+  "level2/002": {
+    "uuid": "023a0632-1ae9-473e-b030-bc518210bf22",
+    "description": "Model that performs a GEMM, BatchNorm, GELU, and ReLU in sequence.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.27,
+    "speedup_torch_baseline": 2.31
+  },
+  "level2/003": {
+    "uuid": "035b9252-ded6-49c8-8073-d714424882b1",
+    "description": "Model that performs a matrix multiplication, subtraction, multiplication, and ReLU activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.84,
+    "speedup_torch_baseline": 2.86
+  },
+  "level2/004": {
+    "uuid": "03ca6260-c1aa-4572-bd3a-2873867bc4cc",
+    "description": "Simple model that performs a matrix multiplication, applies Mish, and applies Mish again.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.85,
+    "speedup_torch_baseline": 2.86
+  },
+  "level2/005": {
+    "uuid": "04edba29-2da0-4d24-8f2d-1c0aaef032ef",
+    "description": "Simple model that performs a matrix multiplication, applies GELU, and then applies Softmax.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.81,
+    "speedup_torch_baseline": 2.8
+  },
+  "level2/006": {
+    "uuid": "0affadbb-50e2-4b81-bdf5-ce7f649d4d99",
+    "description": "Model that performs a 3D transposed convolution, followed by a sum,",
+    "score": "4.0",
+    "speedup_torch_compile": 4.7,
+    "speedup_torch_baseline": 7.11
+  },
+  "level2/007": {
+    "uuid": "0bed6995-3dc3-417a-8264-056f9e3ed853",
+    "description": "Model that performs a convolution, multiplies by a learnable scalar, applies LeakyReLU, and then GELU.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.74,
+    "speedup_torch_baseline": 2.64
+  },
+  "level2/008": {
+    "uuid": "0f2f0847-83d8-43e3-a4eb-8a702d20543a",
+    "description": "Simple model that performs a convolution, applies GELU, and then performs global average pooling.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.3,
+    "speedup_torch_baseline": 2.35
+  },
+  "level2/009": {
+    "uuid": "0f49fcf1-8ade-493f-9fb8-48ffc61a6e34",
+    "description": "Model that performs a series of operations:",
+    "score": "4.0",
+    "speedup_torch_compile": 5.55,
+    "speedup_torch_baseline": 5.65
+  },
+  "level2/010": {
+    "uuid": "0f88c728-5344-4884-807c-6259df247105",
+    "description": "Model that performs matrix multiplication, max pooling, sum, and scaling.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.63,
+    "speedup_torch_baseline": 2.63
+  },
+  "level2/011": {
+    "uuid": "126d58b1-9428-45f4-bb33-ab55eaac3fd2",
+    "description": "Model that performs a matrix multiplication (Gemm), applies Sigmoid,",
+    "score": "3.5",
+    "speedup_torch_compile": 2.2,
+    "speedup_torch_baseline": 2.23
+  },
+  "level2/012": {
+    "uuid": "12c37099-c2e1-42cf-9205-8e4f5636100d",
+    "description": "Simple model that performs a convolution, applies Instance Normalization, and divides by a constant.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.79,
+    "speedup_torch_baseline": 2.9
+  },
+  "level2/013": {
+    "uuid": "19df4fdb-2e0d-4826-9744-ad0ef2d6fea2",
+    "description": "Model that performs a convolution, applies minimum operation, Tanh, and another Tanh.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.31,
+    "speedup_torch_baseline": 3.24
+  },
+  "level2/014": {
+    "uuid": "19fca587-f273-426f-8a30-49b1ed32dc0b",
+    "description": "Model that performs a 3D convolution, scales the output, applies tanh, multiplies by a scaling factor, and applies sigmoid.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.48,
+    "speedup_torch_baseline": 2.69
+  },
+  "level2/015": {
+    "uuid": "1b0de4a7-8fe8-4ca2-9bdc-ca2e9c6a97f6",
+    "description": "Simple model that performs a matrix multiplication, adds a bias term, and applies ReLU.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.84,
+    "speedup_torch_baseline": 2.86
+  },
+  "level2/016": {
+    "uuid": "1b1878f3-75eb-45eb-b234-eb8db24f6154",
+    "description": "Model that performs a matrix multiplication, division, summation, and scaling.",
+    "score": "4.0",
+    "speedup_torch_compile": 372.59,
+    "speedup_torch_baseline": 374.65
+  },
+  "level2/017": {
+    "uuid": "1dbeacdb-141b-4b67-88d8-6548d98903de",
+    "description": "Model that performs a 3D convolution, applies ReLU, LeakyReLU, GELU, Sigmoid activations, and bias in sequence.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.6,
+    "speedup_torch_baseline": 2.19
+  },
+  "level2/018": {
+    "uuid": "1e02f3cb-0416-488f-8cd0-66ea82b83978",
+    "description": "Simple model that performs a Gemm, multiplies the result, and applies LeakyReLU.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.84,
+    "speedup_torch_baseline": 2.86
+  },
+  "level2/019": {
+    "uuid": "232f4235-a85e-4bcd-b18c-22ed05842ab6",
+    "description": "Model that performs a convolution, subtraction, tanh activation, subtraction and average pooling.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.9,
+    "speedup_torch_baseline": 2.29
+  },
+  "level2/020": {
+    "uuid": "238374cb-0357-49e4-bac0-30c7465224ca",
+    "description": "Model that performs a 3D transposed convolution, layer normalization, GELU activation, and scaling.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.0,
+    "speedup_torch_baseline": 8.01
+  },
+  "level2/021": {
+    "uuid": "255aa9df-b7e6-433c-a17a-1cc20db1aa1d",
+    "description": "Model that performs a transposed 3D convolution, applies ReLU, and then applies group normalization.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.87,
+    "speedup_torch_baseline": 5.98
+  },
+  "level2/022": {
+    "uuid": "266a92b9-7557-4f84-9a40-95a8217aa5e3",
+    "description": "A model that performs a transposed 3D convolution, clamps the output to a minimum value,",
+    "score": "4.0",
+    "speedup_torch_compile": 4.39,
+    "speedup_torch_baseline": 4.99
+  },
+  "level2/023": {
+    "uuid": "2aac6563-9946-4a54-b4c8-62f8a7de019c",
+    "description": "Simple model that performs a matrix multiplication, applies sigmoid, and sums the result.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.03,
+    "speedup_torch_baseline": 2.63
+  },
+  "level2/024": {
+    "uuid": "31e4aec5-a3f4-4229-b0b0-03e14e255a76",
+    "description": "Model that performs a convolution, subtracts two values, applies Mish activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.69,
+    "speedup_torch_baseline": 2.01
+  },
+  "level2/025": {
+    "uuid": "3ac693ad-e369-459c-af8e-429f083e24ef",
+    "description": "Model that performs convolution, group normalization, scaling, max pooling, and clamping.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.74,
+    "speedup_torch_baseline": 2.39
+  },
+  "level2/026": {
+    "uuid": "3fa44235-1e52-4dc6-b9da-b8b292b3cb07",
+    "description": "Model that performs a 3D convolution, applies Group Normalization, minimum, clamp, and dropout.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.55,
+    "speedup_torch_baseline": 2.7
+  },
+  "level2/027": {
+    "uuid": "41c15094-b95d-4eee-b9c0-16a1da9b153a",
+    "description": "Model that performs a convolution, adds a bias term, scales, applies sigmoid, and performs group normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.06,
+    "speedup_torch_baseline": 1.96
+  },
+  "level2/028": {
+    "uuid": "43f7f5fe-9ae2-44dc-8266-c29b0f4bb9a6",
+    "description": "Model that performs a 3D transposed convolution, adds an input tensor, and applies HardSwish activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.29,
+    "speedup_torch_baseline": 4.15
+  },
+  "level2/029": {
+    "uuid": "451d804f-9cc9-400d-a134-2d49dbfabb6b",
+    "description": "Model that performs a GEMM, GroupNorm, Swish, Multiply, and Swish operations.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.68,
+    "speedup_torch_baseline": 2.82
+  },
+  "level2/030": {
+    "uuid": "4709e19b-4133-4937-a4ac-98b0a175a936",
+    "description": "This model performs a convolution, average pooling, applies sigmoid, and sums the result.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.91,
+    "speedup_torch_baseline": 1.8
+  },
+  "level2/031": {
+    "uuid": "477aef94-cae7-42af-b42d-3afdb47b9ae6",
+    "description": "Model that performs a transposed convolution, adds a value, takes the minimum, applies GELU, and multiplies by a value.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.5,
+    "speedup_torch_baseline": 2.94
+  },
+  "level2/032": {
+    "uuid": "47b62e10-48c4-4172-b93b-7fa50ffa4a38",
+    "description": "Model that performs a transposed convolution, subtracts a bias term, and applies tanh activation.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.99,
+    "speedup_torch_baseline": 6.5
+  },
+  "level2/033": {
+    "uuid": "4840c0d8-3ed3-44ba-a3bb-92511179fc08",
+    "description": "Model that performs a matrix multiplication (Gemm), Batch Normalization, scaling, and Softmax.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.8,
+    "speedup_torch_baseline": 2.83
+  },
+  "level2/034": {
+    "uuid": "52174d19-a117-4047-a302-fc8443eefd6e",
+    "description": "Simple model that performs a GEMM, applies Group Normalization, and then HardTanh.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.89,
+    "speedup_torch_baseline": 2.99
+  },
+  "level2/035": {
+    "uuid": "54a11a82-02b5-4825-9102-0fd112f339b3",
+    "description": "A model that performs a convolution transpose, minimum operation, sum operation, GELU activation and addition.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.17,
+    "speedup_torch_baseline": 2.38
+  },
+  "level2/036": {
+    "uuid": "5828ebb8-6c4a-42f4-a910-e42d03610929",
+    "description": "A model that performs a matrix multiplication, scaling, and residual addition.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.23,
+    "speedup_torch_baseline": 2.28
+  },
+  "level2/037": {
+    "uuid": "5eb093ad-2d4f-44c9-a3d8-4ab960c4de0d",
+    "description": "A model that performs a matrix multiplication, group normalization, leaky ReLU activation, and element-wise sum.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.36,
+    "speedup_torch_baseline": 2.52
+  },
+  "level2/038": {
+    "uuid": "5eefb0e9-546e-4a09-b276-684bc2b3c29c",
+    "description": "Model that performs:",
+    "score": "3.0",
+    "speedup_torch_compile": 1.66,
+    "speedup_torch_baseline": 1.91
+  },
+  "level2/039": {
+    "uuid": "640c1894-efe8-4764-be91-dc4d28ae4029",
+    "description": "Model that performs average pooling, 3D transposed convolution, clamping,",
+    "score": "3.5",
+    "speedup_torch_compile": 3.23,
+    "speedup_torch_baseline": 4.32
+  },
+  "level2/040": {
+    "uuid": "6466e1f1-8860-48f3-8fb9-a1cf0e86de61",
+    "description": "Simple model that performs a matrix multiplication, adds a value, applies Swish, Tanh, GELU, and Hardtanh activation functions.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.82,
+    "speedup_torch_baseline": 2.88
+  },
+  "level2/041": {
+    "uuid": "65f47374-4f11-41ad-84f4-415184bf9f19",
+    "description": "Model that performs a 3D transposed convolution, followed by a sum, layer normalization, average pooling, and GELU activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.26,
+    "speedup_torch_baseline": 7.69
+  },
+  "level2/042": {
+    "uuid": "6a0d5111-42d5-47cb-8df8-c481a952454d",
+    "description": "Model that performs a 3D transposed convolution, scaling, average pooling, bias addition, and scaling.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.06,
+    "speedup_torch_baseline": 1.34
+  },
+  "level2/043": {
+    "uuid": "6b5fda66-2d91-489f-bb4b-a76c006bb080",
+    "description": "Simple model that performs a convolution, applies ReLU, and applies HardSwish activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.58,
+    "speedup_torch_baseline": 2.47
+  },
+  "level2/044": {
+    "uuid": "6e0f80d3-c787-494c-b366-c0ee593f0377",
+    "description": "Model that performs a transposed convolution, multiplies by a scalar, applies global average pooling,",
+    "score": "4.0",
+    "speedup_torch_compile": 4.71,
+    "speedup_torch_baseline": 5.26
+  },
+  "level2/045": {
+    "uuid": "74c9f49e-bf2f-452c-be12-21a913f4fd4c",
+    "description": "A model that performs a matrix multiplication, applies Swish activation, sums with a bias term, and normalizes with GroupNorm.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.18,
+    "speedup_torch_baseline": 1.56
+  },
+  "level2/046": {
+    "uuid": "76f7966f-b0e7-476b-8c39-287e3106150e",
+    "description": "Model that performs a GEMM, scaling, hardtanh, and GELU activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.82,
+    "speedup_torch_baseline": 2.28
+  },
+  "level2/047": {
+    "uuid": "77476bca-870f-41ec-b35d-abfb9d4430c4",
+    "description": "A 3D convolutional transpose layer followed by Batch Normalization and subtraction.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.14,
+    "speedup_torch_baseline": 1.36
+  },
+  "level2/048": {
+    "uuid": "78799431-89c3-476a-9821-8f146d171119",
+    "description": "Model that performs a series of operations: Gemm, Subtract, GlobalAvgPool, LogSumExp, GELU, and ResidualAdd.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.82,
+    "speedup_torch_baseline": 2.31
+  },
+  "level2/049": {
+    "uuid": "83e7d208-2348-49b9-94c8-f59965969066",
+    "description": "Model that performs a matrix multiplication (Gemm), followed by LogSumExp, LeakyReLU,",
+    "score": "3.5",
+    "speedup_torch_compile": 2.88,
+    "speedup_torch_baseline": 2.92
+  },
+  "level2/050": {
+    "uuid": "84d7ee1a-d73a-4b52-8583-5c58f11cd736",
+    "description": "Simple model that performs a matrix multiplication, applies Swish activation, and scales the result.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.09,
+    "speedup_torch_baseline": 2.63
+  },
+  "level2/051": {
+    "uuid": "85b551d6-d7ef-4fdc-a0b9-27053ea8538a",
+    "description": "Simple model that performs a matrix multiplication, applies ReLU, and divides by a constant.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.81,
+    "speedup_torch_baseline": 2.82
+  },
+  "level2/052": {
+    "uuid": "8625effe-97c3-4ec5-809a-631e0b159c0a",
+    "description": "Model that performs a transposed convolution, applies softmax, adds a bias term, scales the result, and applies sigmoid.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.26,
+    "speedup_torch_baseline": 1.89
+  },
+  "level2/053": {
+    "uuid": "8cd22024-8091-4197-a5a7-278b7593bd61",
+    "description": "A model that performs a sequence of operations:",
+    "score": "3.0",
+    "speedup_torch_compile": 1.08,
+    "speedup_torch_baseline": 1.22
+  },
+  "level2/054": {
+    "uuid": "8effdd51-a72b-4ea3-bccf-635dc7c9041d",
+    "description": "Model that performs a 3D transposed convolution, LogSumExp, HardSwish, subtraction, clamp operations.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.47,
+    "speedup_torch_baseline": 2.01
+  },
+  "level2/055": {
+    "uuid": "93c67fdb-dbed-4ba6-9ade-76af83d65ad5",
+    "description": "Simple model that performs a convolution, applies ReLU, and adds a bias term.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.82,
+    "speedup_torch_baseline": 4.13
+  },
+  "level2/056": {
+    "uuid": "94f86e82-ffc8-4b1a-9e40-8e8a1753f934",
+    "description": "Simple model that performs a 3D convolution, applies minimum operation along a specific dimension,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.08,
+    "speedup_torch_baseline": 1.23
+  },
+  "level2/057": {
+    "uuid": "98e1ca89-890d-4b97-8e05-6f378251af14",
+    "description": "Simple model that performs a convolution, applies activation, and then applies Batch Normalization.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.8,
+    "speedup_torch_baseline": 2.07
+  },
+  "level2/058": {
+    "uuid": "9a5ecceb-d4dd-4a3a-932f-1530ae4b6f1e",
+    "description": "Model that performs a 3D convolution, applies Softmax, and performs two max pooling operations.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.22,
+    "speedup_torch_baseline": 1.24
+  },
+  "level2/059": {
+    "uuid": "9e5db3a3-171d-420f-80c7-52d013f6761c",
+    "description": "Model that performs a transposed 3D convolution, multiplies by a scalar, applies max pooling,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.08,
+    "speedup_torch_baseline": 1.09
+  },
+  "level2/060": {
+    "uuid": "9ef0d244-0457-4db7-aaa2-10dc260c763f",
+    "description": "Model that performs a matrix multiplication, batch normalization, bias addition, division, and Swish activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.84,
+    "speedup_torch_baseline": 2.89
+  },
+  "level2/061": {
+    "uuid": "9f25d056-071d-4d6a-9f42-371ce1aa241b",
+    "description": "Model that performs a convolution, applies HardSwish, and then ReLU.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.76,
+    "speedup_torch_baseline": 3.0
+  },
+  "level2/062": {
+    "uuid": "a3a7d45b-e881-4ee5-96d0-3670a177449f",
+    "description": "Model that performs a GEMM, followed by a max operation, subtraction, and GELU activation.",
+    "score": "4.0",
+    "speedup_torch_compile": 3733.08,
+    "speedup_torch_baseline": 3758.89
+  },
+  "level2/063": {
+    "uuid": "aaa4a112-9cb6-4aac-8a8c-e6a0fac62226",
+    "description": "Model that performs a transposed convolution, batch normalization, tanh activation, max pooling, and group normalization.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.33,
+    "speedup_torch_baseline": 3.46
+  },
+  "level2/064": {
+    "uuid": "ad110de4-5734-4e47-b5ab-403eb853c77f",
+    "description": "Simple model that performs a convolution, takes the minimum with a constant, adds a bias term, and multiplies by a scaling factor.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.79,
+    "speedup_torch_baseline": 4.28
+  },
+  "level2/065": {
+    "uuid": "b0c1c3c9-b5ae-4693-bdb2-763f5467613a",
+    "description": "Model that performs a batch matrix multiplication, instance normalization, summation, residual addition, and multiplication.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.76,
+    "speedup_torch_baseline": 2.8
+  },
+  "level2/067": {
+    "uuid": "b2a07f71-7436-414d-b1b8-b18c20c49dd5",
+    "description": "Model that performs a GEMM, Group Normalization, Minimum operation, and Bias addition.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.76,
+    "speedup_torch_baseline": 2.94
+  },
+  "level2/068": {
+    "uuid": "b8119d2c-8efb-40c6-93d1-c951465878f5",
+    "description": "Model that performs a transposed convolution, applies GELU, and normalizes with GroupNorm.",
+    "score": "4.0",
+    "speedup_torch_compile": 5.34,
+    "speedup_torch_baseline": 5.26
+  },
+  "level2/069": {
+    "uuid": "b8da387f-6197-4338-8096-8c6730890f72",
+    "description": "Simple model that performs a GEMM (general matrix multiplication), applies scaling,",
+    "score": "3.5",
+    "speedup_torch_compile": 2.82,
+    "speedup_torch_baseline": 2.85
+  },
+  "level2/070": {
+    "uuid": "bb6698ae-8978-4b7a-9b74-c01ac21604fa",
+    "description": "A model that performs a convolution, applies tanh, scaling, adds a bias term, and then max-pools.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.12,
+    "speedup_torch_baseline": 2.61
+  },
+  "level2/071": {
+    "uuid": "bbfb251a-adb2-4b4e-999e-42b1fc65d210",
+    "description": "Model that performs a convolution, scales the output, and then applies a minimum operation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.45,
+    "speedup_torch_baseline": 1.52
+  },
+  "level2/072": {
+    "uuid": "bcb6f490-2957-4794-8fac-40fb46413afa",
+    "description": "Model that performs a 3D transposed convolution, applies LeakyReLU, multiplies by a learnable parameter,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.48,
+    "speedup_torch_baseline": 1.93
+  },
+  "level2/073": {
+    "uuid": "be2f2828-2c56-4b30-81e6-f9dac7b8500e",
+    "description": "Model that performs a 3D convolution, applies Group Normalization, computes the mean",
+    "score": "3.0",
+    "speedup_torch_compile": 1.06,
+    "speedup_torch_baseline": 1.2
+  },
+  "level2/074": {
+    "uuid": "bec30dd6-cf4f-4718-ae2a-2c1b0ca748d5",
+    "description": "Model that performs a 3D transposed convolution, scales the output, applies batch normalization,",
+    "score": "4.0",
+    "speedup_torch_compile": 5.36,
+    "speedup_torch_baseline": 5.43
+  },
+  "level2/075": {
+    "uuid": "bf772cb9-3fee-456c-8769-52c3c22f1b91",
+    "description": "Model that performs a 3D transposed convolution, applies Swish activation,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.67,
+    "speedup_torch_baseline": 2.11
+  },
+  "level2/076": {
+    "uuid": "c168c1ec-a1da-471d-bdcd-6fbe658fc162",
+    "description": "A 3D convolutional layer followed by multiplication, instance normalization, clamping, multiplication, and a max operation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.65,
+    "speedup_torch_baseline": 6.68
+  },
+  "level2/077": {
+    "uuid": "c347eb49-09dd-4930-aa86-4eba3f08d465",
+    "description": "Simple model that performs a gemm, swish, divide, clamp, tanh, and clamp operations.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.82,
+    "speedup_torch_baseline": 2.87
+  },
+  "level2/078": {
+    "uuid": "c5df0a9c-8c10-4475-84d5-015036a3d769",
+    "description": "Model that performs a 3D convolution, divides by a constant, applies max pooling,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.67,
+    "speedup_torch_baseline": 1.68
+  },
+  "level2/079": {
+    "uuid": "c7e9d624-3de9-4bac-b5d0-be612259db29",
+    "description": "Model that performs a 3D convolution, applies Mish activation, and then applies Tanh activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.13,
+    "speedup_torch_baseline": 2.35
+  },
+  "level2/080": {
+    "uuid": "cc2fd346-7252-4990-909c-3bb2c648edf3",
+    "description": "Model that performs a convolution, applies Group Normalization, Tanh, HardSwish,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.36,
+    "speedup_torch_baseline": 2.46
+  },
+  "level2/081": {
+    "uuid": "cd7dd2a3-a0be-4077-ba06-e4da00e19a63",
+    "description": "Simple model that performs a convolution, applies Batch Normalization, and scales the output.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.27,
+    "speedup_torch_baseline": 2.66
+  },
+  "level2/082": {
+    "uuid": "d1c2ceec-1e44-4158-b832-2dd214da87f8",
+    "description": "Model that performs a 3D transposed convolution, applies Softmax and Sigmoid.",
+    "score": "4.0",
+    "speedup_torch_compile": 4.96,
+    "speedup_torch_baseline": 6.45
+  },
+  "level2/083": {
+    "uuid": "d41ef257-8b59-4954-8511-d6fdd19872f4",
+    "description": "Model that performs a 3D convolution, applies LeakyReLU, sums with a tensor, clamps, and applies GELU activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.47,
+    "speedup_torch_baseline": 1.99
+  },
+  "level2/084": {
+    "uuid": "d5a2756d-7ff2-4711-b1c9-70e16ec2ead5",
+    "description": "A model that performs a 3D transposed convolution, followed by batch normalization,",
+    "score": "3.0",
+    "speedup_torch_compile": 1.05,
+    "speedup_torch_baseline": 1.26
+  },
+  "level2/085": {
+    "uuid": "d7f6ae18-d276-4d78-bb96-985423896d95",
+    "description": "Model that performs a convolution, subtracts a value, applies HardSwish, MaxPool, and Mish activation functions.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.64,
+    "speedup_torch_baseline": 1.83
+  },
+  "level2/086": {
+    "uuid": "dcbcb53d-4e3b-4073-9b16-a0480b80b247",
+    "description": "A model that performs matrix multiplication, applies dropout, and then applies softmax.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.17,
+    "speedup_torch_baseline": 2.17
+  },
+  "level2/087": {
+    "uuid": "dd6df709-c786-4dc5-a241-c3f2d2b247c5",
+    "description": "Simple model that performs a convolution, applies Mish, and another Mish.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.85,
+    "speedup_torch_baseline": 2.8
+  },
+  "level2/088": {
+    "uuid": "e0f94658-4b10-49b4-bbde-0741e5bae890",
+    "description": "Model that performs a 3D convolution, max pooling, log sum exp, and ReLU activation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.69,
+    "speedup_torch_baseline": 1.78
+  },
+  "level2/089": {
+    "uuid": "e7b59d97-2cc9-4de8-960f-2da35645f82c",
+    "description": "Model that performs a transposed convolution, global average pooling, adds a bias, applies log-sum-exp, sum, and multiplication.",
+    "score": "3.5",
+    "speedup_torch_compile": 3.09,
+    "speedup_torch_baseline": 3.07
+  },
+  "level2/090": {
+    "uuid": "ea8b1fab-d930-4c32-9962-5aaf7d30ecca",
+    "description": "A model that performs a matrix multiplication, divides by a scalar, and applies GELU activation.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.8,
+    "speedup_torch_baseline": 2.81
+  },
+  "level2/091": {
+    "uuid": "eb1bf5e7-f434-47c1-80fe-87dd0f37bac4",
+    "description": "A model implementing the pattern \"Matmul_AvgPool_GELU_Scale_Max\".",
+    "score": "3.5",
+    "speedup_torch_compile": 2.83,
+    "speedup_torch_baseline": 2.82
+  },
+  "level2/092": {
+    "uuid": "ec5694d1-a662-4e8e-8007-2b8977fb2660",
+    "description": "Model that performs a 3D transposed convolution, followed by two max pooling layers and a sum operation.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.02,
+    "speedup_torch_baseline": 1.01
+  },
+  "level2/093": {
+    "uuid": "ed5c5e2c-d06c-48d6-a1fe-ce804be0405e",
+    "description": "Model that performs a sequence of operations:",
+    "score": "4.0",
+    "speedup_torch_compile": 35.52,
+    "speedup_torch_baseline": 35.86
+  },
+  "level2/094": {
+    "uuid": "f02a2dbc-01ed-46e7-ad15-387587917bb4",
+    "description": "Simple model that performs a matrix multiplication, applies minimum, and subtracts a constant.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.06,
+    "speedup_torch_baseline": 1.07
+  },
+  "level2/095": {
+    "uuid": "f5caef4f-3657-48b7-a8e1-03c75ac25bfc",
+    "description": "Model that performs a transposed convolution, applies Mish activation, adds a value,",
+    "score": "4.0",
+    "speedup_torch_compile": 11.84,
+    "speedup_torch_baseline": 12.96
+  },
+  "level2/096": {
+    "uuid": "f66ae3d4-e939-4245-a78c-e370477aa9f2",
+    "description": "Model that performs a matrix multiplication, scales the result, adds a residual connection, clamps the output,",
+    "score": "3.5",
+    "speedup_torch_compile": 2.89,
+    "speedup_torch_baseline": 2.95
+  },
+  "level2/097": {
+    "uuid": "f9452af9-d805-4e93-a0dd-f5bedfb10e51",
+    "description": "A model that performs a GEMM, BiasAdd, Hardtanh, Mish, and GroupNorm operations in sequence.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.44,
+    "speedup_torch_baseline": 2.53
+  },
+  "level2/098": {
+    "uuid": "f9f39c70-0ccd-4566-932d-fa8dbb4dd37f",
+    "description": "Model implementing the pattern \"Gemm_Sigmoid_Scaling_ResidualAdd\".",
+    "score": "3.5",
+    "speedup_torch_compile": 2.84,
+    "speedup_torch_baseline": 2.87
+  },
+  "level2/099": {
+    "uuid": "fbc02527-d895-4f3b-bd0e-16652627ce55",
+    "description": "Simple model that performs a convolution, divides by a constant, and applies LeakyReLU.",
+    "score": "3.5",
+    "speedup_torch_compile": 2.88,
+    "speedup_torch_baseline": 3.15
+  },
+  "level3/002": {
+    "uuid": "0758f0c9-159d-4d38-8f5c-4405651ca1d3",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.88,
+    "speedup_torch_baseline": 1.92
+  },
+  "level3/003": {
+    "uuid": "085cff0b-deb5-4cfe-9c85-6a0483f4de81",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.07,
+    "speedup_torch_baseline": 1.15
+  },
+  "level3/004": {
+    "uuid": "0bf782ac-a4c9-4c6f-9f8a-744bc57aa318",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.91,
+    "speedup_torch_baseline": 3.13
+  },
+  "level3/005": {
+    "uuid": "1f7f6ad6-76d7-448b-b593-d517ec1ce360",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.17,
+    "speedup_torch_baseline": 1.57
+  },
+  "level3/006": {
+    "uuid": "207dde16-620f-4359-bc53-5c92e0358da1",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.79,
+    "speedup_torch_baseline": 1.75
+  },
+  "level3/007": {
+    "uuid": "267e7458-e9f9-4a1b-9d4f-2a0067ad5e15",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.42,
+    "speedup_torch_baseline": 1.93
+  },
+  "level3/008": {
+    "uuid": "33c4df94-3e8e-4f00-9235-82e338bdb4bb",
+    "description": "an unassuming Transformer block",
+    "score": "3.0",
+    "speedup_torch_compile": 1.34,
+    "speedup_torch_baseline": 1.63
+  },
+  "level3/009": {
+    "uuid": "3cc10c57-c5af-4b9a-9979-d94a76e525fa",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.51,
+    "speedup_torch_baseline": 1.72
+  },
+  "level3/010": {
+    "uuid": "406d93ae-0823-4564-b376-0d0308e32579",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.73,
+    "speedup_torch_baseline": 1.73
+  },
+  "level3/011": {
+    "uuid": "4210eb23-8bb7-47dd-8a22-9b89bffa068e",
+    "description": "A multi-head masked self-attention layer with a projection at the end that uses ReLU instead of Softmax.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 2.06
+  },
+  "level3/012": {
+    "uuid": "463f12ec-936d-4d36-8350-b79a6872b42b",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.02,
+    "speedup_torch_baseline": 1.96
+  },
+  "level3/013": {
+    "uuid": "4a475366-566c-4d9e-a216-554ef0bece62",
+    "description": "",
+    "score": "2.0",
+    "speedup_torch_compile": 0.24,
+    "speedup_torch_baseline": 1.25
+  },
+  "level3/014": {
+    "uuid": "4ab4fae7-f3ab-4814-98e9-2085d78f5288",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.39,
+    "speedup_torch_baseline": 1.39
+  },
+  "level3/015": {
+    "uuid": "4cdef3ad-483a-4189-92fd-a7063f9696df",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.55,
+    "speedup_torch_baseline": 2.17
+  },
+  "level3/016": {
+    "uuid": "515140d5-4ec4-48b2-b458-71dbb982914c",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 2.0,
+    "speedup_torch_baseline": 2.58
+  },
+  "level3/017": {
+    "uuid": "589244de-8713-424c-aa22-0a615f9edc9a",
+    "description": "A vanilla multi-head masked self-attention layer with a projection at the end.",
+    "score": "3.0",
+    "speedup_torch_compile": 1.8,
+    "speedup_torch_baseline": 2.23
+  },
+  "level3/018": {
+    "uuid": "5907d8f1-ff00-4fb7-9e1d-ffa264e64de0",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.53,
+    "speedup_torch_baseline": 3.21
+  },
+  "level3/019": {
+    "uuid": "5fbfb7e3-9b47-4e04-9e42-443e40a83a40",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.38,
+    "speedup_torch_baseline": 6.38
+  },
+  "level3/020": {
+    "uuid": "60097180-4d4d-4ce1-9f36-8fbb34518f91",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.29,
+    "speedup_torch_baseline": 2.17
+  },
+  "level3/021": {
+    "uuid": "60692d7a-bc5b-4b40-8863-9cfe19a3a13c",
+    "description": "",
+    "score": "4.0",
+    "speedup_torch_compile": 5.95,
+    "speedup_torch_baseline": 2.52
+  },
+  "level3/022": {
+    "uuid": "68f49140-6b04-4cb7-bb20-05067acc3caa",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.69,
+    "speedup_torch_baseline": 1.69
+  },
+  "level3/023": {
+    "uuid": "6b3955d0-afbd-484f-963e-8956b1521646",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.39,
+    "speedup_torch_baseline": 1.39
+  },
+  "level3/024": {
+    "uuid": "7029cd67-a6df-4342-81b4-c9882966ee95",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.81,
+    "speedup_torch_baseline": 2.17
+  },
+  "level3/025": {
+    "uuid": "7de9bf21-8271-4020-b3ae-992d25545775",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.34,
+    "speedup_torch_baseline": 1.39
+  },
+  "level3/026": {
+    "uuid": "7f242946-17fa-4c55-a596-23953dce6857",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 3.97,
+    "speedup_torch_baseline": 3.91
+  },
+  "level3/027": {
+    "uuid": "804cfe7d-3aca-462b-9814-828a4926e0ea",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.4,
+    "speedup_torch_baseline": 1.92
+  },
+  "level3/028": {
+    "uuid": "816c12e2-822a-4ba7-913b-59eeaf38e83a",
+    "description": "",
+    "score": "2.0",
+    "speedup_torch_compile": 0.59,
+    "speedup_torch_baseline": 1.46
+  },
+  "level3/029": {
+    "uuid": "817fc766-45d0-4bdf-94f4-1d7b994858a1",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.13,
+    "speedup_torch_baseline": 1.13
+  },
+  "level3/030": {
+    "uuid": "8720e37e-3da2-4ff8-8d41-725705519955",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.15,
+    "speedup_torch_baseline": 1.32
+  },
+  "level3/031": {
+    "uuid": "962572cd-2f65-47f1-9023-36ed85e90096",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.0,
+    "speedup_torch_baseline": 1.69
+  },
+  "level3/032": {
+    "uuid": "96405e39-5321-41e8-8658-449f09a9bda0",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.01,
+    "speedup_torch_baseline": 2.56
+  },
+  "level3/034": {
+    "uuid": "9d1d6431-25a7-4e38-a83d-1c4d7f557da0",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.18,
+    "speedup_torch_baseline": 2.39
+  },
+  "level3/035": {
+    "uuid": "b6a64bcc-2a70-46e2-a8c9-57a7a45529c7",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.52,
+    "speedup_torch_baseline": 2.08
+  },
+  "level3/036": {
+    "uuid": "b750b2fe-e175-454d-b67c-f78eb11bcf8f",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 2.02,
+    "speedup_torch_baseline": 2.52
+  },
+  "level3/038": {
+    "uuid": "bb069815-df5e-4b98-b6e6-0a5e9d0b40d0",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.53,
+    "speedup_torch_baseline": 1.53
+  },
+  "level3/039": {
+    "uuid": "c0a1ad6b-9a0f-48fc-8dbe-173751410e9c",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.1,
+    "speedup_torch_baseline": 1.19
+  },
+  "level3/040": {
+    "uuid": "d100d2a6-9d1e-4457-976c-139f481d3d61",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.4,
+    "speedup_torch_baseline": 1.42
+  },
+  "level3/041": {
+    "uuid": "d6ca8e5a-0f2b-40bf-94b7-1d429dfeec42",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.36,
+    "speedup_torch_baseline": 1.57
+  },
+  "level3/042": {
+    "uuid": "da12dd2a-1bab-4ac3-b1e3-4c7af3f6a63b",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.23,
+    "speedup_torch_baseline": 1.6
+  },
+  "level3/043": {
+    "uuid": "dae03587-6562-47b9-a50d-f89c57e861fc",
+    "description": "",
+    "score": "2.5",
+    "speedup_torch_compile": 0.96,
+    "speedup_torch_baseline": 1.17
+  },
+  "level3/044": {
+    "uuid": "f3f3a8b7-35b5-42f7-9f91-414dbdc53d36",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.84,
+    "speedup_torch_baseline": 1.65
+  },
+  "level3/045": {
+    "uuid": "f7713d41-4ab8-4f60-a92c-b34a8d4c9f72",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.84,
+    "speedup_torch_baseline": 1.84
+  },
+  "level3/046": {
+    "uuid": "fb82c3ca-4a54-4e1b-86c3-487fc952748f",
+    "description": "",
+    "score": "3.0",
+    "speedup_torch_compile": 1.39,
+    "speedup_torch_baseline": 1.39
+  },
+  "level3/047": {
+    "uuid": "fe144e68-f3d1-412d-8b24-04af4f4d6348",
+    "description": "",
+    "score": "4.0",
+    "speedup_torch_compile": 8.46,
+    "speedup_torch_baseline": 8.23
+  },
+  "level3/048": {
+    "uuid": "ff533fb9-e646-47e4-823a-afec9b884534",
+    "description": "",
+    "score": "3.5",
+    "speedup_torch_compile": 3.73,
+    "speedup_torch_baseline": 3.76
+  }
+}

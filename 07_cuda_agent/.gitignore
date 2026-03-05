@@ -1,0 +1,15 @@
+# Runtime workdirs (recreated by setup_workspace on each run)
+**/workdir/
+
+# Run logs and history (generated at runtime)
+**/logs/
+**/history/
+
+# Build artifacts
+build/
+*.so
+*.o
+
+# Python cache
+__pycache__/
+*.pyc
