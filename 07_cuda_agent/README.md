@@ -2,6 +2,8 @@
 
 An autonomous agent that accelerates PyTorch models by implementing custom CUDA C++ extensions. Given a `model.py`, the agent writes CUDA kernels, compiles, verifies correctness, and profiles performance in an iterative loop.
 
+This step is the **non-preemptible baseline** CUDA agent. For queue-based runtime preemption (interrupting autonomous turns with new user input), use Step 08.
+
 ## What's New
 
 Built on Step 06 (error recovery, tool use, skill routing), this step adds:
@@ -115,3 +117,9 @@ Create a directory with a `model.py` that defines:
 ```bash
 python chatbot.py --task /path/to/your/task
 ```
+
+## Next Step
+
+Step 08 builds on this baseline and adds a preemptible input queue plus optional long-shell-command interruption:
+
+- [08_preemptible_cuda_agent](../08_preemptible_cuda_agent/)

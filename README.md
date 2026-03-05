@@ -15,8 +15,9 @@ Each step is a **self-contained, independently runnable** project. Later steps b
 | [05](05_shell_tool/) | Shell Tool | Shell command execution with safety approvals |
 | [06](06_error_recovery/) | Error Recovery | Task-level retry, autonomous repair, optional failed-trace cleanup |
 | [07](07_cuda_agent/) | CUDA Agent | Domain-specific CUDA kernel development with compile-verify-profile loop |
-| 08 | MCP Support | Model Context Protocol, dynamic tool discovery |
-| 09 (optional) | Streaming | Streaming output and richer terminal UX |
+| [08](08_preemptible_cuda_agent/) | Preemptible CUDA Agent | Queue-based interruptible autonomy with runtime task preemption |
+| 09 | MCP Support | Model Context Protocol, dynamic tool discovery |
+| 10 (optional) | Streaming | Streaming output and richer terminal UX |
 
 ## Quick Start
 

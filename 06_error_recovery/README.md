@@ -83,4 +83,5 @@ For each user task/turn:
 
 ## What's Next
 
-In Step 07, we'll implement sub-agents for decomposing complex tasks and aggregating results.
+- Step 07 introduces a domain-specific CUDA agent with compile -> verify -> profile loops.
+- Step 08 extends that CUDA agent with preemptible input queue behavior so users can interrupt autonomous runs and inject new context mid-turn.
