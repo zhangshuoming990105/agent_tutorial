@@ -26,6 +26,44 @@ always_on: true
 
 You are a PyTorch and CUDA expert. Accelerate the given PyTorch Model by creating a high-performance CUDA C++ extension.
 
+## ⚠️ Hardware: AMD GPU (ROCm / HIP backend)
+
+This system uses an **AMD GPU** compiled via HIP. Critical differences from NVIDIA CUDA:
+
+| Topic | NVIDIA CUDA | AMD HIP (this system) |
+|---|---|---|
+| Wavefront / warp size | 32 threads | **64 threads** |
+| Warp shuffle | `__shfl_down_sync(0xFFFFFFFF, v, d)` | `__shfl_down(v, d)` (no mask) |
+| Ballot | `__ballot_sync(0xFFFFFFFF, pred)` | `__ballot(pred)` (no mask) |
+| Sync | `__syncthreads()` | same |
+
+**Always define and use:**
+```cpp
+#define WARP_SIZE 64   // AMD wavefront = 64 threads, NOT 32
+```
+
+All warp-level reductions must loop or tile for 64 threads:
+```cpp
+// Correct warp reduction for AMD (64-lane wavefront)
+for (int offset = WARP_SIZE / 2; offset > 0; offset >>= 1)
+    val += __shfl_down(val, offset);
+```
+
+Block-level reduction with shared memory (accounting for 64-lane warp):
+```cpp
+__shared__ float smem[WARP_SIZE];   // one slot per warp
+int lane = threadIdx.x % WARP_SIZE;
+int wid  = threadIdx.x / WARP_SIZE;
+// 1. warp-level reduce
+for (int d = WARP_SIZE/2; d > 0; d >>= 1) val += __shfl_down(val, d);
+// 2. first lane of each warp writes to smem
+if (lane == 0) smem[wid] = val;
+__syncthreads();
+// 3. first warp reduces smem
+val = (threadIdx.x < blockDim.x / WARP_SIZE) ? smem[lane] : 0.0f;
+if (wid == 0) { for (int d = WARP_SIZE/2; d > 0; d >>= 1) val += __shfl_down(val, d); }
+```
+
 ## Critical Restrictions
 
 ### Strictly Forbidden
@@ -103,7 +141,7 @@ python3 -m utils.profiling
 
 **Priority 2 - Hardware Utilization (20-50% impact)**:
 - Vectorized loads (float2/float4)
-- Warp-level primitives (__shfl_sync, __ballot_sync)
+- Warp-level primitives (use AMD HIP syntax — see hardware section above)
 - Occupancy tuning (block size, register usage)
 
 **Priority 3 - Fine-tuning (<20% impact)**:
@@ -111,8 +149,54 @@ python3 -m utils.profiling
 - Mixed precision (FP16/TF32)
 - Prefetching and double buffering
 
+## Common Kernel Patterns
+
+### Elementwise / pointwise
+```cpp
+// grid-stride loop with float4 vectorization
+int idx = blockIdx.x * blockDim.x + threadIdx.x;
+int stride = gridDim.x * blockDim.x;
+float4* in4  = reinterpret_cast<float4*>(input);
+float4* out4 = reinterpret_cast<float4*>(output);
+for (int i = idx; i < n/4; i += stride) {
+    float4 v = in4[i];
+    v.x = op(v.x); v.y = op(v.y); v.z = op(v.z); v.w = op(v.w);
+    out4[i] = v;
+}
+// handle tail
+```
+
+### Reduction (sum, max, …)
+Use the two-level warp→block pattern shown in the hardware section above.
+Launch with `blockDim.x = 256` (4 warps of 64).
+
+### GEMM (matrix multiply)
+Use 2D shared-memory tiling. Recommended tile sizes for AMD:
+```cpp
+#define TILE_M 64
+#define TILE_N 64
+#define TILE_K 16
+// Each thread computes a 4×4 output sub-tile (register blocking).
+// Load TILE_M × TILE_K of A and TILE_K × TILE_N of B into shared memory.
+// Inner loop over K in steps of TILE_K.
+```
+Aim for `blockDim = (16, 16)` → 256 threads = 4 wavefronts.
+
+### 2D Convolution (depthwise)
+```cpp
+// One thread per output element, shared memory tile for the input patch.
+// blockDim = (16, 16), each block covers a 16×16 spatial tile.
+// Load input tile + halo into shared memory, then iterate over kernel.
+```
+
+### Prefix scan / cumsum (small N ≤ 1024)
+Use a single block with work-efficient Blelloch scan in shared memory.
+For large N, use a two-pass approach: per-block scan + inter-block prefix.
+
 ## Success Criteria
 
-- Correctness: All verification checks must pass (atol=1e-2, rtol=1e-2)
-- Once verification passes, run profiling once for measurement, output a summary, and STOP.
-- Profiling is informational — there is no mandatory performance target.
+- Correctness: All verification checks must pass (atol=1e-2, rtol=1e-2).
+- **Performance stopping rule**:
+  - After the first profiling run: if `cuda_time ≤ torch_compile_time × 1.1` → output summary and **STOP**.
+  - If `cuda_time > torch_compile_time × 1.1` (kernel is slower): make **exactly one more** rewrite using a fundamentally different strategy (e.g. switch from naive to tiled, or reduce register pressure), re-compile, re-verify, re-profile, then **STOP regardless** of the new result.
+  - Never attempt more than two full compile→verify→profile cycles per run.

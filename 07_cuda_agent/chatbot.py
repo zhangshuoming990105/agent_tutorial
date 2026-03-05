@@ -53,7 +53,7 @@ from tools import (
 )
 
 DEFAULT_MAX_TOKENS = 128_000
-DEFAULT_MAX_AGENT_STEPS = 20
+DEFAULT_MAX_AGENT_STEPS = 30
 
 
 class RunLogger:
@@ -90,6 +90,13 @@ by implementing custom CUDA C++ extensions that are both correct and fast.
 Workspace root: {workspace_root}
 All file-tool paths are relative to this root. run_shell executes in this directory by default.
 
+## Hardware: AMD GPU (ROCm / HIP backend)
+This system compiles .cu files via HIP (hipcc). Critical differences from NVIDIA CUDA:
+- **Wavefront (warp) size = 64** — NOT 32. Always define `#define WARP_SIZE 64`.
+- Warp shuffle: use `__shfl_down(val, offset)` — no mask argument (no `_sync` suffix).
+- Ballot:       use `__ballot(pred)` — no mask argument.
+- All warp-level loops must account for 64-lane wavefronts.
+
 ## Workspace Structure
 ```
 .
@@ -116,12 +123,21 @@ All file-tool paths are relative to this root. run_shell executes in this direct
 5. Verify: `python3 -m utils.verification`
 6. If compilation or verification fails, fix and re-run from step 4.
 7. Once verification passes: run `python3 -m utils.profiling` once for measurement.
-8. Output a summary with profiling results and STOP.
+8. Apply the stopping rule below and output a summary.
 
 ## Stopping Rule
-Once verification passes, run profiling ONCE for measurement, then output a final \
-summary and STOP immediately. Do NOT continue optimizing. Do NOT write test scripts. \
-Profiling is informational only — there is no performance gate.
+After the first successful profiling run, compare `CUDA Extension` time to `Torch Compile` time:
+
+- **If CUDA Extension ≤ Torch Compile × 1.1** (your kernel is competitive): \
+output a final summary and **STOP immediately**.
+- **If CUDA Extension > Torch Compile × 1.1** (your kernel is slower): \
+make **exactly one more rewrite** using a fundamentally different strategy \
+(e.g. switch from naive to tiled GEMM, add vectorized loads, reduce register pressure, \
+fix warp-size assumptions). Then re-compile → re-verify → re-profile once. \
+Output a final summary and **STOP regardless** of the new result.
+
+Do NOT attempt more than two full compile→verify→profile cycles. \
+Do NOT write test scripts. Do NOT ask the user for guidance.
 
 ## Tool Usage Policy
 1. Use tools directly — do not ask for permission or provide a plan first.
@@ -842,6 +858,8 @@ def chat(
         did_call_tool = False
         recovery = RecoveryState()
         suppressed_handoff_count = 0
+        # Deduplicate history saves within a single turn: key = (baseline, compile, cuda)
+        saved_profile_sigs: set[tuple] = set()
 
         for step_idx in range(max_agent_steps):
             try:
@@ -862,6 +880,23 @@ def chat(
                 tool_outcome = process_tool_calls(response, ctx)
                 if tool_outcome.called:
                     did_call_tool = True
+                    # Save history immediately when profiling results appear in any tool
+                    # output — ensures every intermediate good result is preserved even
+                    # if the agent continues optimising and later overwrites the workdir.
+                    if task_dir:
+                        for msg in reversed(ctx.messages[-6:]):
+                            if msg.get("role") != "tool":
+                                continue
+                            m_p = PROFILE_RESULT_RE.search(msg.get("content", "") or "")
+                            if m_p:
+                                try:
+                                    sig = (m_p.group(1), m_p.group(2), m_p.group(3))
+                                    if sig not in saved_profile_sigs:
+                                        saved_profile_sigs.add(sig)
+                                        _try_save_history(task_dir, msg.get("content", ""))
+                                except (ValueError, IndexError):
+                                    pass
+                                break
                     if tool_outcome.failures:
                         recovery.record_failures(tool_outcome.failures, tool_outcome.failure_kinds)
                         log(f"  [recovery] Detected failure ({recovery.last_failure_kind}): "
