@@ -193,6 +193,13 @@ Aim for `blockDim = (16, 16)` → 256 threads = 4 wavefronts.
 Use a single block with work-efficient Blelloch scan in shared memory.
 For large N, use a two-pass approach: per-block scan + inter-block prefix.
 
+### Auto-tuning tile sizes
+When optimal tile sizes are unclear (e.g. multiple plausible block configs),
+use the **autotune** skill: templatise the kernel over tile parameters,
+instantiate 8–15 configs, and benchmark all at first invocation. See
+`skills/autotune/SKILL.md` for the full pattern. This is especially useful
+for Conv2d, GEMM, and other kernels sensitive to occupancy/LDS trade-offs.
+
 ## Success Criteria
 
 - Correctness: All verification checks must pass (atol=1e-2, rtol=1e-2).
