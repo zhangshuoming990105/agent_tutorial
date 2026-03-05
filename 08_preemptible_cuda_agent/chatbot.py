@@ -72,8 +72,15 @@ QUEUE_EVENT_EOF = "eof"
 QUEUE_EVENT_INTERRUPT = "interrupt"
 
 
+_ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _strip_ansi(text: str) -> str:
+    return _ANSI_ESCAPE_RE.sub("", text)
+
+
 class RunLogger:
-    """Tee-writes to stdout and a log file."""
+    """Tee-writes to stdout (with ANSI colours) and a log file (plain text)."""
 
     def __init__(self, log_path: Path | None = None):
         self._file = None
@@ -84,7 +91,7 @@ class RunLogger:
     def log(self, msg: str = "") -> None:
         print(msg)
         if self._file:
-            self._file.write(msg + "\n")
+            self._file.write(_strip_ansi(msg) + "\n")
             self._file.flush()
 
     def close(self) -> None:
@@ -306,8 +313,11 @@ SLASH_COMMANDS_HELP = """Available commands:
   /task inject  - Inject current task.md/TASK.md into ongoing conversation
   /tokens       - Show token usage statistics
   /history      - Show all messages with token estimates (compact)
-  /debug        - Show full context with colored output (what the LLM sees)
-  /compact      - Smart context compaction (compress old messages)
+  /debug        - Show full context with readable summary (what the LLM sees)
+  /debug raw    - Show raw OpenAI messages array (exact API payload, role/content/tool_calls)
+  /compact [low|high] - Smart context compaction (default: low)
+                    low  = conservative: keep structure, summarize redundant parts
+                    high = aggressive: collapse everything to minimal bullet-list summaries
   /skills       - Show loaded skills and currently active skills
   /skill        - Pin/unpin a skill: /skill <name> on|off
   /verbose      - Show or set verbose token diagnostics: /verbose on|off
@@ -488,8 +498,21 @@ def render_token_report(
 
 
 def do_compact(
-    client: OpenAI, model: str, ctx: ContextManager, current_overhead_tokens: int = 0
+    client: OpenAI,
+    model: str,
+    ctx: ContextManager,
+    current_overhead_tokens: int = 0,
+    level: str = "low",
+    compact_client: OpenAI | None = None,
+    compact_model: str | None = None,
 ) -> None:
+    """Compress old conversation messages.
+
+    Args:
+        level: "low" (conservative) or "high" (aggressive).
+        compact_client: separate LLM client for compaction; falls back to *client*.
+        compact_model: model name for compaction; falls back to *model*.
+    """
     keep_recent = 6
     droppable = len(ctx.messages) - 1 - keep_recent
     if droppable < 4:
@@ -499,12 +522,15 @@ def do_compact(
         )
         return
 
+    _client = compact_client if compact_client is not None else client
+    _model = compact_model if compact_model else model
+
     before = ctx.get_context_tokens(overhead_tokens=current_overhead_tokens)
     before_local = ctx.estimate_messages_tokens_structured()
     old_messages = ctx.messages[1:-keep_recent]
-    log(f"  Compacting {len(old_messages)} old messages...")
+    log(f"  Compacting {len(old_messages)} old messages (level={level}, model={_model})...")
 
-    compacted = compact_messages(client, model, old_messages)
+    compacted = compact_messages(_client, _model, old_messages, level=level)
     if not compacted:
         log("  Compaction failed - context unchanged.\n")
         return
@@ -519,8 +545,9 @@ def do_compact(
     replaced, new_count = ctx.apply_compacted_messages(compacted, keep_recent)
     after = ctx.get_context_tokens(overhead_tokens=current_overhead_tokens)
     log(
-        f"  Replaced {replaced} messages with {new_count} compacted messages. "
-        f"Context: ~{before:,} -> ~{after:,} tokens\n"
+        f"  Compressed {replaced} old messages → {new_count} summary message(s) "
+        f"(+ {keep_recent} recent kept). "
+        f"Context: ~{before:,} → ~{after:,} tokens\n"
     )
 
 
@@ -632,14 +659,34 @@ def handle_slash_command(
     if cmd == "/history":
         log(f"\n{ctx.format_history()}\n")
         return True
-    if cmd == "/debug":
-        log(f"\n{ctx.format_debug()}\n")
+    if cmd in ("/debug", "/debug raw"):
+        if cmd == "/debug raw":
+            log(f"\n{ctx.format_raw()}\n")
+        else:
+            log(f"\n{ctx.format_debug()}\n")
         return True
-    if cmd == "/compact":
+    if cmd.startswith("/compact"):
+        parts = command.strip().split()
+        level = "low"
+        if len(parts) >= 2:
+            arg = parts[1].lower()
+            if arg in ("low", "high"):
+                level = arg
+            else:
+                log(f"\nUsage: /compact [low|high]  (default: low)\n")
+                return True
         overhead_tokens = estimate_schema_tokens(
             ctx, runtime_state["active_tool_schemas"]
         ) + estimate_skill_tokens(ctx, runtime_state["active_skill_prompt"])
-        do_compact(client, model, ctx, current_overhead_tokens=overhead_tokens)
+        do_compact(
+            client,
+            model,
+            ctx,
+            current_overhead_tokens=overhead_tokens,
+            level=level,
+            compact_client=runtime_state.get("compact_client"),
+            compact_model=runtime_state.get("compact_model"),
+        )
         return True
     if cmd == "/skills":
         all_skill_names = sorted(runtime_state["skills"].keys())
@@ -1002,6 +1049,8 @@ def chat(
     history_prompt: str = "",
     task_prompt: str = "",
     task_context_source: str = "",
+    compact_client: OpenAI | None = None,
+    compact_model: str | None = None,
 ) -> None:
     set_shell_safety(safe_shell)
     set_shell_interrupt_on_preempt(preempt_shell_kill)
@@ -1044,6 +1093,8 @@ def chat(
         "task_prompt": task_prompt,
         "task_context_source": task_context_source,
         "preempt_shell_kill": preempt_shell_kill,
+        "compact_client": compact_client,
+        "compact_model": compact_model,
     }
 
     log(f"CUDA Agent ready (model: {model}, context: {max_tokens:,} tokens).")
@@ -1054,6 +1105,8 @@ def chat(
     log(f"Preempt shell-kill: {'on' if preempt_shell_kill else 'off'}")
     log(f"Recovery cleanup: {'on' if recovery_cleanup else 'off'}")
     log(f"Max autonomous steps per turn: {max_agent_steps}")
+    _cm = compact_model or model
+    log(f"Compact model: {_cm}")
     log(f"Workspace: {workspace_root_str()}")
     if history_prompt:
         log(f"History: loaded previous implementation for reference")
@@ -1119,7 +1172,15 @@ def chat(
             ) + estimate_skill_tokens(ctx, active_skill_prompt)
             if ctx.needs_compaction(overhead_tokens=overhead_tokens):
                 log("  (Context approaching limit, auto-compacting...)")
-                do_compact(client, model, ctx, current_overhead_tokens=overhead_tokens)
+                do_compact(
+                    client,
+                    model,
+                    ctx,
+                    current_overhead_tokens=overhead_tokens,
+                    level="low",
+                    compact_client=runtime_state.get("compact_client"),
+                    compact_model=runtime_state.get("compact_model"),
+                )
 
             likely_action_intent = has_action_intent(user_input, selected_skill_names)
             autonomy_nudge = ""
@@ -1328,6 +1389,12 @@ def main():
         help="GPU selection: 'auto' (default) auto-detects idle GPU via rocm-smi/nvidia-smi; "
              "'none' disables GPU env injection; or an explicit index like '1'.",
     )
+    parser.add_argument(
+        "--compact-model",
+        type=str,
+        default=None,
+        help="Model to use for /compact (default: deepseek-v3). Uses the same API client.",
+    )
     args = parser.parse_args()
 
     if args.list_tasks:
@@ -1339,6 +1406,10 @@ def main():
     if args.list_models:
         list_models(client)
         return
+
+    # Compact model: default gpt-oss-120b (cheap on Ksyun), configurable via --compact-model.
+    # Falls back to provider_model if not overridden.
+    compact_model: str | None = args.compact_model or "gpt-oss-120b"
 
     gpu_flag = (args.gpu or "").strip().lower()
     if gpu_flag == "auto":
@@ -1406,6 +1477,8 @@ def main():
             history_prompt=history_prompt,
             task_prompt=task_prompt,
             task_context_source=task_context_source,
+            compact_client=client,
+            compact_model=compact_model,
         )
     finally:
         log(f"\nLog saved to: {log_path}")

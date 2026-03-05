@@ -7,30 +7,60 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import json
 import re
+import sys
 
 import tiktoken
 
+# Disable ANSI colour codes when stdout is not a real terminal (e.g. piped
+# through `tee` in live_session.sh).  Keeps both the live log file and the
+# persistent log clean while still rendering colours in interactive mode.
+_COLORS_ENABLED: bool = sys.stdout.isatty()
+
+
+def set_colors_enabled(enabled: bool) -> None:
+    global _COLORS_ENABLED
+    _COLORS_ENABLED = enabled
+
 
 class Color:
-    RESET = "\033[0m"
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-    RED = "\033[31m"
-    GREEN = "\033[32m"
-    YELLOW = "\033[33m"
-    BLUE = "\033[34m"
+    RESET   = "\033[0m"
+    BOLD    = "\033[1m"
+    DIM     = "\033[2m"
+    RED     = "\033[31m"
+    GREEN   = "\033[32m"
+    YELLOW  = "\033[33m"
+    BLUE    = "\033[34m"
     MAGENTA = "\033[35m"
 
-    ROLE_COLORS = {
-        "system": YELLOW,
-        "user": GREEN,
-        "assistant": BLUE,
-        "tool": MAGENTA,
-    }
+    ROLE_COLORS: dict[str, str] = {}  # populated below
 
     @classmethod
     def role(cls, role: str) -> str:
         return cls.ROLE_COLORS.get(role, cls.RESET)
+
+
+Color.ROLE_COLORS = {
+    "system":    Color.YELLOW,
+    "user":      Color.GREEN,
+    "assistant": Color.BLUE,
+    "tool":      Color.MAGENTA,
+}
+
+
+class _ColorProxy:
+    """Thin proxy over *Color* that returns empty strings when colors are off."""
+
+    def __getattr__(self, name: str) -> str:
+        val = getattr(Color, name)
+        if _COLORS_ENABLED:
+            return val
+        # Suppress ANSI codes; pass through non-string values (e.g. ROLE_COLORS dict)
+        if isinstance(val, str):
+            return ""
+        return val
+
+    def role(self, role: str) -> str:
+        return Color.role(role) if _COLORS_ENABLED else ""
 
 
 @dataclass
@@ -80,12 +110,39 @@ class ContextManager:
         return len(self._enc.encode(text))
 
     def _estimate_message_tokens(self, msg: dict, include_metadata: bool = False) -> int:
-        total = 4
+        """Estimate tokens for one message, properly accounting for all OpenAI fields.
+
+        Tool-specific fields (tool_call_id, name, tool_calls[].function.*) are
+        always included — they contribute substantially to the real prompt cost
+        and were previously missed when include_metadata=False.
+        """
+        total = 4  # per-message framing overhead
+        role = msg.get("role", "")
+
+        # Content (present for user, system, tool, and text-only assistant messages)
         total += self.estimate_tokens(msg.get("content", "") or "")
+
+        # tool-result messages carry tool_call_id and name alongside content
+        if role == "tool":
+            total += self.estimate_tokens(msg.get("tool_call_id", "") or "")
+            total += self.estimate_tokens(msg.get("name", "") or "")
+
+        # assistant messages that issue tool calls carry the full tool_calls array
+        elif role == "assistant":
+            for tc in (msg.get("tool_calls") or []):
+                fn = tc.get("function", {})
+                total += self.estimate_tokens(tc.get("id", "") or "")
+                total += self.estimate_tokens(fn.get("name", "") or "")
+                total += self.estimate_tokens(fn.get("arguments", "") or "")
+
         if include_metadata:
-            meta = {k: v for k, v in msg.items() if k != "content"}
-            if meta:
-                total += self.estimate_tokens(json.dumps(meta, ensure_ascii=False))
+            # Add any remaining fields not already counted above (e.g. "type" on
+            # tool_calls entries, provider-specific keys, etc.)
+            skip = {"content", "tool_calls", "tool_call_id", "name", "role"}
+            extra = {k: v for k, v in msg.items() if k not in skip}
+            if extra:
+                total += self.estimate_tokens(json.dumps(extra, ensure_ascii=False))
+
         return total
 
     def estimate_messages_tokens(
@@ -285,7 +342,7 @@ class ContextManager:
         return "\n".join(lines)
 
     def format_debug(self) -> str:
-        c = Color
+        c = _ColorProxy()
         total_tokens = self.get_context_tokens()
         utilization = total_tokens / self.max_tokens * 100
         source = "calibrated" if self._last_prompt_tokens else "estimated"
@@ -343,3 +400,63 @@ class ContextManager:
             f"{c.BOLD}Total:{c.RESET} {len(self.messages)} messages, ~{total_tokens:,} tokens [{source}]"
         )
         return "\n".join(lines)
+
+    def format_raw(self) -> str:
+        """Print context as pretty-printed JSON — the exact messages array sent to the API.
+
+        tool_calls[].function.arguments is re-parsed from its escaped string form
+        so it renders as a nested JSON object rather than an escaped string.
+        A one-line token annotation is prepended to each message as a comment.
+        """
+        total_tokens = self.get_context_tokens()
+        source = "calibrated" if self._last_prompt_tokens else "estimated"
+        c = _ColorProxy()
+
+        header = (
+            f"{c.BOLD}// OpenAI messages — {len(self.messages)} items, "
+            f"~{total_tokens:,} tokens [{source}]{c.RESET}"
+        )
+
+        # Build a clean copy of messages suitable for JSON serialisation.
+        # tool_calls[].function.arguments is a JSON-encoded string in the real
+        # payload; we expand it here so the output reads naturally.
+        def _clean(msg: dict) -> dict:
+            out: dict = {}
+            for k, v in msg.items():
+                if k == "tool_calls" and isinstance(v, list):
+                    cleaned_tcs = []
+                    for tc in v:
+                        tc_copy = dict(tc)
+                        fn = tc_copy.get("function", {})
+                        if fn:
+                            fn_copy = dict(fn)
+                            try:
+                                fn_copy["arguments"] = json.loads(fn_copy.get("arguments", "{}"))
+                            except Exception:
+                                pass
+                            tc_copy["function"] = fn_copy
+                        cleaned_tcs.append(tc_copy)
+                    out[k] = cleaned_tcs
+                else:
+                    out[k] = v
+            return out
+
+        # Annotate each message with its token estimate as a JSON comment line.
+        parts = [header, "["]
+        for i, msg in enumerate(self.messages):
+            tok = self._estimate_message_tokens(msg, include_metadata=True)
+            role = msg["role"]
+            role_color = c.role(role)
+            comma = "," if i < len(self.messages) - 1 else ""
+
+            # Token annotation as a pseudo-comment above each object
+            parts.append(f"  {c.DIM}// [{i}] ~{tok} tokens{c.RESET}")
+
+            # Pretty-print the message object with 2-space indent inside the array
+            raw_json = json.dumps(_clean(msg), ensure_ascii=False, indent=4)
+            # Shift by 2 spaces (we're inside the outer "[")
+            indented = "\n".join("  " + line for line in raw_json.splitlines())
+            parts.append(f"{role_color}{indented}{comma}{c.RESET}")
+
+        parts.append("]")
+        return "\n".join(parts)

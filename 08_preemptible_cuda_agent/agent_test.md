@@ -103,6 +103,109 @@ bash scripts/live_session.sh send "start"
 bash scripts/live_session.sh send "quit"
 ```
 
+### 场景 D：连续工具调用（非抢占）
+
+验证 agent 在一轮内连续执行多种工具调用的能力。**非抢占模式**：每次发送后必须等待 `>>> Ready for input.` 再发下一条。
+
+**启动**（不加载 task，chat-first 模式）：
+
+```bash
+bash scripts/live_session.sh stop || true
+bash scripts/live_session.sh start
+```
+
+**步骤 1–7**：发送一条综合指令，让 agent 在一轮内完成以下操作（连续工具调用）。
+
+> ⚠️ **注意**：`live_session.sh send` 按行读取，多行消息会被拆成多条输入。请使用**单行**指令，例如：
+
+```
+请按顺序完成：1) 在 temp 下创建以时间戳命名的文件夹（如 temp/20260306_123456）作为工作目录；2) 在里面写几个 example 的 C 和 Python 程序；3) 连续读这些文件确认内容；4) 对其中一个文件用 append 模式追加内容；5) 用 gcc 编译 C；6) 运行 C 的 binary；7) 运行 Python 程序。完成后简要总结。
+```
+
+等待 `>>> Ready for input.`。
+
+**步骤 8**：测试 slash 命令
+
+```bash
+bash scripts/live_session.sh send "/help"
+# 等待 >>> Ready for input.
+bash scripts/live_session.sh send "/debug"
+# 等待 >>> Ready for input.
+bash scripts/live_session.sh send "/tokens"
+# 等待 >>> Ready for input.
+```
+
+**步骤 9**：压缩上下文
+
+```bash
+bash scripts/live_session.sh send "/compact"
+# 等待 >>> Ready for input.
+```
+
+**步骤 10**：再次查看 debug，验证上下文是否被压缩
+
+```bash
+bash scripts/live_session.sh send "/debug"
+# 等待 >>> Ready for input.
+bash scripts/live_session.sh send "quit"
+```
+
+**验证点**：
+- [ ] 步骤 1–7：`write_file`、`read_file`、`write_file mode=append`、`run_shell`（gcc、运行 binary、python）均有调用
+- [ ] `/help`、`/debug`、`/tokens` 输出正确
+- [ ] `/compact` 后 `/debug`：若压缩成功，上下文消息数或 token 数应减少；若显示 "Compaction failed"，则上下文不变（可能因当前 token 较少或 API 限制）
+
+### 场景 E：20 轮多工具连续对话 + /compact high（自动化）
+
+验证多轮工具调用积累后的上下文压缩效果，同时作为完整的端到端回归测试。
+
+**方式 1 — 一键运行（推荐）**：
+
+`scripts/run_test.sh` 会自动启动 agent（使用 `gpt-oss-120b`）、调用 `run_20_turns.sh`、执行断言，最后退出并打印 PASS/FAIL：
+
+```bash
+cd 08_preemptible_cuda_agent
+bash scripts/run_test.sh               # 默认 model: gpt-oss-120b
+bash scripts/run_test.sh --model mco-4 # 指定其他 model
+```
+
+**方式 2 — 分步手动**：
+
+```bash
+# 启动 agent（模型显式指定）
+bash scripts/live_session.sh stop || true
+bash scripts/live_session.sh start --model gpt-oss-120b --compact-model gpt-oss-120b
+
+# 等待 >>> Ready for input. 后运行 20 轮脚本
+bash scripts/run_20_turns.sh
+# run_20_turns.sh 结束后自动发送 /tokens、/compact high、/debug raw
+
+bash scripts/live_session.sh send "quit"
+```
+
+**`run_20_turns.sh` 执行的 20 轮内容**：
+
+| 轮次 | 操作 |
+|:---:|------|
+| 1 | `get_current_time` 工具调用 |
+| 2–4 | 写入 `hello.c`、`factorial.c`，读取确认 |
+| 5–6 | gcc 编译两个 C 程序 |
+| 7–8 | 运行两个 C 二进制 |
+| 9–10 | 写入并运行 `fib.py` |
+| 11–13 | append 写 `hello.c`，确认，重新编译运行 |
+| 14–15 | 写入并运行 `primes.py` |
+| 16 | `list_directory` 列出目录 |
+| 17 | `calculator` 工具计算 |
+| 18–20 | 写入并运行 `stats.py` |
+| 结束 | `/tokens` → `/compact high` → `/debug raw` |
+
+**断言**（`run_test.sh` 自动验证）：
+- [ ] Ready 信号数 ≥ 23（20 turns + /tokens + /compact + /debug）
+- [ ] `write_file`、`read_file`、`run_shell` 均被调用
+- [ ] `/compact high` 成功：log 中出现 `Compressed N old messages`
+- [ ] 无 compact parse error
+- [ ] `/debug raw` 输出包含 `"role":` JSON 字段
+
 ## 验证清单
 
 - [ ] slash 命令输出写入 `logs/<timestamp>.log`
@@ -122,4 +225,6 @@ bash scripts/live_session.sh send "quit"
 ## 相关文件
 
 - `scripts/live_session.sh`：会话控制脚本
+- `scripts/run_20_turns.sh`：20 轮对话脚本（需已有运行中的 session）
+- `scripts/run_test.sh`：完整端到端测试（自动起 agent + 20 轮 + 断言）
 - `README.md`：项目整体说明与 Live E2E Test Workflow 概述
