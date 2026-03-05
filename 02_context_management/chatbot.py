@@ -19,21 +19,24 @@ Slash commands during chat:
     /clear    - Reset conversation
     /help     - Show available commands
 
-Environment variables:
-    INFINI_API_KEY   - Your InfiniAI API key
-    INFINI_BASE_URL  - API base URL (default: https://cloud.infini-ai.com/maas/v1)
+Environment variables (provider auto-detected, Ksyun takes priority):
+    KSYUN_API_KEY    - Ksyun API key  (default model: mco-4)
+    KSYUN_BASE_URL   - Ksyun base URL (default: https://kspmas.ksyun.com/v1/)
+    INFINI_API_KEY   - InfiniAI API key  (default model: deepseek-v3)
+    INFINI_BASE_URL  - InfiniAI base URL (default: https://cloud.infini-ai.com/maas/v1)
 """
 
 import argparse
-import os
 import sys
+from pathlib import Path
 
 from openai import OpenAI
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from llm import create_client, list_models  # noqa: E402
+
 from context import ContextManager
 
-DEFAULT_BASE_URL = "https://cloud.infini-ai.com/maas/v1"
-DEFAULT_MODEL = "deepseek-v3"
 DEFAULT_MAX_TOKENS = 128_000
 
 SYSTEM_PROMPT = "You are a helpful assistant."
@@ -44,33 +47,6 @@ SLASH_COMMANDS_HELP = """Available commands:
   /debug    - Show full context with colored output (what the LLM sees)
   /clear    - Reset conversation history
   /help     - Show this help message"""
-
-
-def create_client() -> OpenAI:
-    api_key = os.getenv("INFINI_API_KEY")
-    base_url = os.getenv("INFINI_BASE_URL", DEFAULT_BASE_URL)
-
-    if not api_key:
-        print("Error: INFINI_API_KEY environment variable is not set.")
-        print("Get your API key from https://cloud.infini-ai.com")
-        sys.exit(1)
-
-    return OpenAI(api_key=api_key, base_url=base_url)
-
-
-def list_models(client: OpenAI) -> None:
-    """Fetch and display available models from the API."""
-    print("Fetching available models...\n")
-    try:
-        models = client.models.list()
-        model_list = sorted(models.data, key=lambda m: m.id)
-        print(f"Found {len(model_list)} models:\n")
-        for m in model_list:
-            print(f"  - {m.id}")
-        print()
-    except Exception as e:
-        print(f"Failed to list models: {e}")
-        sys.exit(1)
 
 
 def handle_slash_command(command: str, ctx: ContextManager) -> bool:
@@ -161,8 +137,8 @@ def main():
     parser.add_argument(
         "--model",
         type=str,
-        default=DEFAULT_MODEL,
-        help=f"Model to use (default: {DEFAULT_MODEL})",
+        default=None,
+        help="Model to use (default: provider-specific)",
     )
     parser.add_argument(
         "--max-tokens",
@@ -172,13 +148,14 @@ def main():
     )
     args = parser.parse_args()
 
-    client = create_client()
+    client, provider_model = create_client()
+    model = args.model or provider_model
 
     if args.list_models:
         list_models(client)
         return
 
-    chat(client, args.model, args.max_tokens)
+    chat(client, model, args.max_tokens)
 
 
 if __name__ == "__main__":

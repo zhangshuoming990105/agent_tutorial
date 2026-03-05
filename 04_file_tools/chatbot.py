@@ -10,19 +10,19 @@ Builds on 03_tool_use by adding filesystem tools:
 
 import argparse
 import json
-import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from openai import OpenAI
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from llm import create_client, list_models  # noqa: E402
 
 from compactor import compact_messages
 from context import ContextManager
 from skill_manager import build_skill_prompt, load_skills, select_skills
 from tools import execute_tool, get_all_tool_schemas, get_tool_schema_map
 
-DEFAULT_BASE_URL = "https://cloud.infini-ai.com/maas/v1"
-DEFAULT_MODEL = "deepseek-v3"
 DEFAULT_MAX_TOKENS = 128_000
 DEFAULT_MAX_AGENT_STEPS = 5
 
@@ -46,30 +46,6 @@ SLASH_COMMANDS_HELP = """Available commands:
   /verbose  - Show or set verbose token diagnostics: /verbose on|off
   /clear    - Reset conversation history
   /help     - Show this help message"""
-
-
-def create_client() -> OpenAI:
-    api_key = os.getenv("INFINI_API_KEY")
-    base_url = os.getenv("INFINI_BASE_URL", DEFAULT_BASE_URL)
-    if not api_key:
-        print("Error: INFINI_API_KEY environment variable is not set.")
-        print("Get your API key from https://cloud.infini-ai.com")
-        sys.exit(1)
-    return OpenAI(api_key=api_key, base_url=base_url)
-
-
-def list_models(client: OpenAI) -> None:
-    print("Fetching available models...\n")
-    try:
-        models = client.models.list()
-        model_list = sorted(models.data, key=lambda m: m.id)
-        print(f"Found {len(model_list)} models:\n")
-        for m in model_list:
-            print(f"  - {m.id}")
-        print()
-    except Exception as e:
-        print(f"Failed to list models: {e}")
-        sys.exit(1)
 
 
 def estimate_schema_tokens(ctx: ContextManager, tool_schemas: list[dict]) -> int:
@@ -427,7 +403,7 @@ def main():
     )
     parser.add_argument("--list-models", action="store_true", help="List models and exit")
     parser.add_argument(
-        "--model", type=str, default=DEFAULT_MODEL, help=f"Model to use ({DEFAULT_MODEL})"
+        "--model", type=str, default=None, help="Model to use (default: provider-specific)"
     )
     parser.add_argument(
         "--max-tokens",
@@ -443,11 +419,12 @@ def main():
     )
     args = parser.parse_args()
 
-    client = create_client()
+    client, provider_model = create_client()
+    model = args.model or provider_model
     if args.list_models:
         list_models(client)
         return
-    chat(client, args.model, args.max_tokens, max(1, args.max_agent_steps))
+    chat(client, model, args.max_tokens, max(1, args.max_agent_steps))
 
 
 if __name__ == "__main__":

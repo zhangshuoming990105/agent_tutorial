@@ -14,7 +14,7 @@ Each step is a **self-contained, independently runnable** project. Later steps b
 | [04](04_file_tools/) | File Tools | File read/write/search + dynamic skill-based schema exposure |
 | [05](05_shell_tool/) | Shell Tool | Shell command execution with safety approvals |
 | [06](06_error_recovery/) | Error Recovery | Task-level retry, autonomous repair, optional failed-trace cleanup |
-| 07 | Sub-Agents | Multi-agent architecture, task decomposition, result aggregation |
+| [07](07_cuda_agent/) | CUDA Agent | Domain-specific CUDA kernel development with compile-verify-profile loop |
 | 08 | MCP Support | Model Context Protocol, dynamic tool discovery |
 | 09 (optional) | Streaming | Streaming output and richer terminal UX |
 
@@ -23,13 +23,26 @@ Each step is a **self-contained, independently runnable** project. Later steps b
 ```bash
 cd 01_basic_chatbot
 pip install -r requirements.txt
+
+# Option A: Ksyun (mco-4 / opus4.6, used by default when key is set)
+export KSYUN_API_KEY="your-key"
+
+# Option B: InfiniAI (deepseek-v3, fallback when KSYUN_API_KEY is absent)
 export INFINI_API_KEY="your-key"
+
 python chatbot.py
 ```
 
 ## Provider
 
-This tutorial uses [InfiniAI](https://cloud.infini-ai.com) as the LLM provider via the OpenAI-compatible API. The code works with any OpenAI-compatible provider — just change `INFINI_BASE_URL`.
+The chatbot auto-detects the provider from environment variables — **Ksyun takes priority** when `KSYUN_API_KEY` is set, otherwise it falls back to [InfiniAI](https://cloud.infini-ai.com).
+
+| Provider | Env var | Default model | Base URL |
+| -------- | ------- | ------------- | -------- |
+| [Ksyun](https://kspmas.ksyun.com) | `KSYUN_API_KEY` | `mco-4` (opus4.6) | `https://kspmas.ksyun.com/v1/` |
+| [InfiniAI](https://cloud.infini-ai.com) | `INFINI_API_KEY` | `deepseek-v3` | `https://cloud.infini-ai.com/maas/v1` |
+
+Override the model at any time with `--model <name>`.
 
 ## References
 

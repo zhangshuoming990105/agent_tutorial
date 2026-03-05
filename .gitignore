@@ -10,6 +10,9 @@ __pycache__/
 # Shell policy (runtime state, not source)
 .shell_policy.json
 
+# Scratch / temp files
+temp/
+
 # Environment
 .env
 .venv/

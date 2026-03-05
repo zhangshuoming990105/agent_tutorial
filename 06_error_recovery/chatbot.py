@@ -14,12 +14,14 @@ New in this step:
 import argparse
 from dataclasses import dataclass, field
 import json
-import os
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 
 from openai import OpenAI
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from llm import create_client, list_models  # noqa: E402
 
 from compactor import compact_messages
 from context import ContextManager
@@ -33,8 +35,6 @@ from tools import (
     workspace_root_str,
 )
 
-DEFAULT_BASE_URL = "https://cloud.infini-ai.com/maas/v1"
-DEFAULT_MODEL = "deepseek-v3"
 DEFAULT_MAX_TOKENS = 128_000
 DEFAULT_MAX_AGENT_STEPS = 5
 
@@ -135,30 +135,6 @@ class RecoveryState:
             self.repeated_failure_count = 1
             self.last_failure_signature = signature
         self.failures.extend(failures[-3:])
-
-
-def create_client() -> OpenAI:
-    api_key = os.getenv("INFINI_API_KEY")
-    base_url = os.getenv("INFINI_BASE_URL", DEFAULT_BASE_URL)
-    if not api_key:
-        print("Error: INFINI_API_KEY environment variable is not set.")
-        print("Get your API key from https://cloud.infini-ai.com")
-        sys.exit(1)
-    return OpenAI(api_key=api_key, base_url=base_url)
-
-
-def list_models(client: OpenAI) -> None:
-    print("Fetching available models...\n")
-    try:
-        models = client.models.list()
-        model_list = sorted(models.data, key=lambda m: m.id)
-        print(f"Found {len(model_list)} models:\n")
-        for m in model_list:
-            print(f"  - {m.id}")
-        print()
-    except Exception as e:
-        print(f"Failed to list models: {e}")
-        sys.exit(1)
 
 
 def estimate_schema_tokens(ctx: ContextManager, tool_schemas: list[dict]) -> int:
@@ -779,7 +755,7 @@ def main():
     )
     parser.add_argument("--list-models", action="store_true", help="List models and exit")
     parser.add_argument(
-        "--model", type=str, default=DEFAULT_MODEL, help=f"Model to use ({DEFAULT_MODEL})"
+        "--model", type=str, default=None, help="Model to use (default: provider-specific)"
     )
     parser.add_argument(
         "--max-tokens",
@@ -805,14 +781,15 @@ def main():
     )
     args = parser.parse_args()
 
-    client = create_client()
+    client, provider_model = create_client()
+    model = args.model or provider_model
     if args.list_models:
         list_models(client)
         return
 
     chat(
         client=client,
-        model=args.model,
+        model=model,
         max_tokens=args.max_tokens,
         max_agent_steps=max(1, args.max_agent_steps),
         safe_shell=not args.unsafe_shell,
