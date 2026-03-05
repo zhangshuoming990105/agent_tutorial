@@ -249,10 +249,13 @@ def run_task(task_spec: str, gpu_index: str, extra_args: list[str],
 # ---------------------------------------------------------------------------
 
 def read_task_result(task_spec: str) -> str:
-    """Return a one-line result summary from the most recent history entry.
+    """Return a one-line result summary for the BEST history entry of this task.
 
-    Reads <task_dir>/history/<latest>/result.json after a task finishes.
-    Returns an empty string if the file is missing or unreadable.
+    Scans all <task_dir>/history/*/result.json entries and returns the one
+    with the highest speedup (baseline_us / cuda_us).  This is important
+    because the agent may produce several correct-but-slow results during a
+    single run before finding a better one — or the opposite: it may regress
+    after an initially good result.  We always surface the best.
     """
     import json as _json
     try:
@@ -261,31 +264,37 @@ def read_task_result(task_spec: str) -> str:
         history_dir = task_dir / "history"
         if not history_dir.is_dir():
             return ""
-        # Most recent entry = lexicographically last timestamp directory
-        entries = sorted(
-            (e for e in history_dir.iterdir() if e.is_dir()),
-            key=lambda e: e.name,
-            reverse=True,
-        )
-        for entry in entries:
+
+        best_speedup = -1.0
+        best_line = ""
+        for entry in sorted(history_dir.iterdir()):
+            if not entry.is_dir():
+                continue
             result_file = entry / "result.json"
-            if result_file.is_file():
+            if not result_file.is_file():
+                continue
+            try:
                 data = _json.loads(result_file.read_text(encoding="utf-8"))
-                verify = data.get("verify", "?")
-                profile = data.get("profile") or {}
-                if profile:
-                    baseline = profile.get("baseline_us", 0.0)
-                    cuda = profile.get("cuda_us", 0.0)
-                    compile_t = profile.get("compile_us", 0.0)
-                    speedup = baseline / cuda if cuda > 0 else 0.0
-                    return (
-                        f"verify={verify}  "
-                        f"baseline={baseline:.0f}us  "
-                        f"torch.compile={compile_t:.0f}us  "
-                        f"cuda={cuda:.0f}us  "
-                        f"speedup={speedup:.2f}x"
-                    )
-                return f"verify={verify}  (no profile data)"
+            except Exception:
+                continue
+            verify = data.get("verify", "?")
+            profile = data.get("profile") or {}
+            if not profile:
+                continue
+            baseline = profile.get("baseline_us", 0.0)
+            cuda = profile.get("cuda_us", 0.0)
+            compile_t = profile.get("compile_us", 0.0)
+            speedup = baseline / cuda if cuda > 0 else 0.0
+            if speedup > best_speedup:
+                best_speedup = speedup
+                best_line = (
+                    f"verify={verify}  "
+                    f"baseline={baseline:.0f}us  "
+                    f"torch.compile={compile_t:.0f}us  "
+                    f"cuda={cuda:.0f}us  "
+                    f"speedup={speedup:.2f}x (best of {entry.name})"
+                )
+        return best_line
     except Exception:
         pass
     return ""
