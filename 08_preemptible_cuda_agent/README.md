@@ -48,6 +48,8 @@ python chatbot.py
 For real agent debugging in Step 08, use a **single long-lived chatbot process** and drive it by appending inputs through `live_session.sh`.
 All assistant-initiated real tests should follow this workflow by default.
 
+**→ See [agent_test.md](agent_test.md)** for the canonical test procedure (human + AI, step-by-step, completion signals).
+
 This is now the preferred test method for end-to-end validation because it reproduces real runtime behavior:
 
 - one persistent chatbot process
