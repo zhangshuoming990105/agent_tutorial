@@ -191,6 +191,12 @@ class ContextManager:
         recent = self.messages[-keep_recent:]
         replaced_count = len(self.messages) - 1 - keep_recent
         self.messages = system + compacted + recent
+        # Invalidate API-calibration state: the prompt token count changed
+        # drastically, so delta-based estimation would give wrong results.
+        # Fall back to local estimation until the next real API call.
+        self._last_prompt_tokens = None
+        self._last_prompt_local_tokens = 0
+        self._last_overhead_tokens = 0
         return replaced_count, len(compacted)
 
     def pop_last_message(self) -> dict | None:

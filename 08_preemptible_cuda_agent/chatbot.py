@@ -315,6 +315,7 @@ SLASH_COMMANDS_HELP = """Available commands:
   /history      - Show all messages with token estimates (compact)
   /debug        - Show full context with readable summary (what the LLM sees)
   /debug raw    - Show raw OpenAI messages array (exact API payload, role/content/tool_calls)
+  /set-model <name> - Switch the active LLM model for subsequent turns (history preserved)
   /compact [low|high] - Smart context compaction (default: low)
                     low  = conservative: keep structure, summarize redundant parts
                     high = aggressive: collapse everything to minimal bullet-list summaries
@@ -444,6 +445,7 @@ def render_token_report(
     tool_schemas: list[dict],
     skill_prompt: str,
     verbose: bool = False,
+    active_model: str = "",
 ) -> str:
     schema_tokens = estimate_schema_tokens(ctx, tool_schemas)
     skill_tokens = estimate_skill_tokens(ctx, skill_prompt)
@@ -455,6 +457,7 @@ def render_token_report(
 
     if not verbose:
         lines = [
+            *(["Model:        " + active_model] if active_model else []),
             f"Messages:     {len(ctx.messages)} ({len(ctx.messages) - 1} excluding system)",
             f"Requests:     {ctx.stats.total_requests}",
             "",
@@ -652,6 +655,7 @@ def handle_slash_command(
                 runtime_state["active_tool_schemas"],
                 runtime_state["active_skill_prompt"],
                 verbose=runtime_state["verbose"],
+                active_model=runtime_state.get("model", ""),
             )
             + "\n"
         )
@@ -664,6 +668,17 @@ def handle_slash_command(
             log(f"\n{ctx.format_raw()}\n")
         else:
             log(f"\n{ctx.format_debug()}\n")
+        return True
+    if cmd.startswith("/set-model"):
+        parts = command.strip().split(None, 1)
+        if len(parts) < 2 or not parts[1].strip():
+            log(f"\nUsage: /set-model <model-name>\nCurrent model: {runtime_state['model']}\n")
+            return True
+        new_model = parts[1].strip()
+        old_model = runtime_state["model"]
+        runtime_state["model"] = new_model
+        log(f"\nModel switched: {old_model} → {new_model}\n"
+            f"Conversation history is preserved; new model will see all previous context.\n")
         return True
     if cmd.startswith("/compact"):
         parts = command.strip().split()
@@ -1095,9 +1110,12 @@ def chat(
         "preempt_shell_kill": preempt_shell_kill,
         "compact_client": compact_client,
         "compact_model": compact_model,
+        "model": model,   # mutable: /set-model updates this
     }
 
-    log(f"CUDA Agent ready (model: {model}, context: {max_tokens:,} tokens).")
+    log(f"CUDA Agent ready.")
+    log(f"Model:        {model}")
+    log(f"Context:      {max_tokens:,} tokens")
     log(f"Tools loaded: {', '.join(t['function']['name'] for t in all_tool_schemas)}")
     if skills:
         log(f"Skills loaded: {', '.join(sorted(skills.keys()))}")
@@ -1144,7 +1162,7 @@ def chat(
                 log("Bye!")
                 break
             if user_input.startswith("/"):
-                handle_slash_command(user_input, client, model, ctx, runtime_state)
+                handle_slash_command(user_input, client, runtime_state["model"], ctx, runtime_state)
                 continue
 
             turn_start_index = len(ctx.messages)
@@ -1174,7 +1192,7 @@ def chat(
                 log("  (Context approaching limit, auto-compacting...)")
                 do_compact(
                     client,
-                    model,
+                    runtime_state["model"],
                     ctx,
                     current_overhead_tokens=overhead_tokens,
                     level="low",
@@ -1214,9 +1232,10 @@ def chat(
                             {"role": "system", "content": active_skill_prompt}
                         )
                     # Make model request asynchronously so preempt can be observed while waiting.
+                    # Read model from runtime_state so /set-model takes effect immediately.
                     async_call = _start_async_model_call(
                         client=client,
-                        model=model,
+                        model=runtime_state["model"],
                         request_messages=request_messages,
                         active_tool_schemas=active_tool_schemas,
                     )
