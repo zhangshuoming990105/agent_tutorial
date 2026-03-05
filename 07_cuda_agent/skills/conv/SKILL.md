@@ -1,147 +1,118 @@
 ---
 name: conv
-description: Convolution kernel optimization skill for AMD GPUs. Covers Conv2d, ConvTranspose2d, and depthwise separable convolution with practical guidance on when handwritten kernels can and cannot beat vendor libraries.
-tools:
-  - run_shell
-  - read_file
-  - write_file
-triggers:
-  - conv
-  - convolution
-  - conv2d
-  - conv_transpose
-  - depthwise
-  - transpose
-  - spatial
-always_on: false
+description: Optimizes Conv/ConvTranspose kernels on ROCm or Hygon DCU by first profiling the real backend kernel, then locating upstream MIOpen/ROCm implementations via web+repo search, and finally integrating the best path into PyTorch CUDA/HIP extensions. Use when user mentions conv, conv2d, conv_transpose, winograd, miopen, rocprof, hipprof, or asks for SOTA kernel strategy.
 ---
 
-# Convolution Kernel Optimization — AMD K100 (HIP)
+# Conv Optimization Skill (ROCm/Hygon)
 
-## When a handwritten kernel CAN beat PyTorch
+## Scope
 
-| Operation | Input scale | Why | Expected speedup |
-|---|---|---|---|
-| Depthwise conv | Any | Memory-bound, vendor libs under-optimised for groups=IC | 1.2–3× |
-| Pointwise (1×1) conv | IC/OC ≤ 64 | Small GEMM, launch overhead dominates vendor path | 1.0–1.5× |
-| Fused depthwise+pointwise | Any | Eliminates intermediate tensor write | 1.5–2× |
-| Conv2d with small spatial | ≤ 32×32 | Vendor libs target large spatial; overhead dominates | 1.0–1.3× |
+Use this skill for:
 
-## When a handwritten kernel CANNOT beat PyTorch
+- `Conv2d` / `ConvTranspose2d` / depthwise conv optimization tasks.
+- Cases where the user asks to "beat PyTorch" or "align with MIOpen speed".
+- "Find SOTA kernel implementation" requests that require both profiling and internet research.
 
-| Operation | Input scale | Why | Expected speedup |
-|---|---|---|---|
-| **Standard Conv2d / ConvTranspose2d** | **Large spatial (≥128²), C ≥ 32** | **MIOpen uses matrix hardware (MFMA); scalar ALU is 10–15× slower** | **0.05–0.15×** |
-| Large GEMM (matmul) | M,N,K ≥ 1024 | rocBLAS uses MFMA GEMM micro-kernels | 0.05–0.15× |
+Do **not** start by rewriting kernels blindly. Always identify what PyTorch actually launches first.
 
-**Key principle**: on AMD MI-series / K100, the Matrix Fused Multiply-Add (MFMA)
-unit delivers ~15× higher FLOPS than scalar FMA.  Any operation that PyTorch
-routes through rocBLAS or MIOpen will use MFMA; a handwritten scalar kernel
-_cannot_ compete unless it also uses MFMA intrinsics (currently not available
-via standard HIP on Hygon K100).
+## Default Strategy: Profile -> Identify -> Locate Source -> Integrate
 
-## ConvTranspose2d: Algorithmic Analysis
+### 1) Profile the real kernel path
 
-For ConvTranspose2d with stride=1, padding=0:
+1. Run the target workload with GPU timing (torch events or driver timing).
+2. Use `hipprof --stats --hip-trace` to extract kernel names and API time.
+3. If backend is MIOpen, enable logs:
+   - `MIOPEN_ENABLE_LOGGING=1`
+   - `MIOPEN_ENABLE_LOGGING_CMD=1`
+   - `MIOPEN_LOG_LEVEL=6` (or 7 for deeper traces)
+4. Record:
+   - solver name (for example `HConv677`)
+   - algorithm (`miopenConvolutionBwdDataAlgoWinograd`, etc.)
+   - shape signature
 
-```
-output[n, oc, oh, ow] = Σ_{ic, kh, kw} input[n, ic, oh-kh, ow-kw] × weight[ic, oc, kh, kw]
-```
+Never assume printed labels like "cuDNN" are accurate on ROCm/Hygon.
 
-Where out-of-bounds input reads are 0 (gather pattern).
+### 2) Reproduce with vendor driver
 
-**Compute**: 2 × N × OC × OH × OW × IC × KH × KW FLOPs.
-Example: N=8, IC=OC=64, OH≈OW≈514, KH=3, KW=7 → 366 GFLOPs.
+From MIOpen logs, extract the equivalent `MIOpenDriver conv ...` command and run it directly.
 
-**Arithmetic intensity**: 366 GFLOP / (67 MB input + 0.3 MB weight + 67 MB output) ≈ 2.7 FLOP/byte.
-This is compute-bound, NOT memory-bound. The bottleneck is FLOPS throughput.
+Goal:
 
-## Three kernel families tested (auto-tuned)
+- confirm the same algorithm/solver
+- get clean reference kernel time without Python overhead
 
-### Family A: Input-patch LDS, Weight from L2
+### 3) Locate source implementation (web + local)
 
-```
-Grid:  (⌈OW/TOW⌉, N×OH, ⌈OC/TOC⌉)
-Block: (TOW, TOC)   e.g. (16,16) = 256 threads
-LDS:   TIC × KH × (TOW+KW−1) floats per IC tile
-```
+Use both:
 
-- Input patch loaded into LDS, reused by TOC output channels.
-- Weight read from L2 per thread: unique (ic, oc, kh, kw).
-- **Problem**: same input patch reloaded for each OC tile (OC/TOC blocks).
-- **Best time**: 169 ms (0.12×).
+1. Local toolchain inspection (`/opt/dtk`, headers, libs, db)
+2. Upstream search (`ROCm/MIOpen` repository via web/repo clone)
 
-### Family B: All-OC fused, Input-patch LDS
+Mapping pattern for Winograd-like solvers:
 
-```
-Grid:  (⌈OW/TOW⌉, N×OH)   — NO OC dimension
-Block: (TOW, OC=64) = TOW×64 threads
-LDS:   IC_ALL × KH × (TOW+KW−1) floats (full IC patch)
-```
+- solver selection logic: `src/solver/conv/conv_winoRxS.cpp`
+- kernel wrapper asm: `src/kernels/Conv_Winograd_*.s`
+- included body: `src/kernels/Conv_Winograd_*.inc`
+- metadata / args layout: `src/kernels/Conv_Winograd_*_metadata.inc`
 
-- Full input patch (all IC channels) loaded once into LDS.
-- All 64 OC threads read from the same LDS data → no OC-dimension redundancy.
-- **Best time**: 166 ms (0.12×). **Winner** for large-spatial tasks.
+### 4) Integrate into extension
 
-### Family C: Weight-LDS, Input from global (cuda-l1 reference approach)
+Prefer **MIOpen Immediate API** integration first (lower risk, closest to vendor speed):
 
-```
-Grid:  (⌈OW/BW⌉, ⌈OH/BH⌉, N×OC)
-Block: (BW, BH) = 256 threads, one thread per output pixel
-LDS:   IC × KH × KW floats = 5.25 KB for IC=64
-```
+- `miopenConvolutionBackwardDataGetSolutionCount/GetSolution`
+- select Winograd solution (or force by solver name if needed)
+- `miopenConvolutionBackwardDataCompileSolution`
+- `miopenConvolutionBackwardDataImmediate`
 
-- Weight in LDS, input directly from global/L2.
-- 2D spatial tiling: better locality for input reads.
-- **Works well for small inputs** (128×128 → L2 hit rate high).
-- **Fails for large inputs** (512×512 → input exceeds L2, HBM bandwidth bottleneck).
-- **Best time**: 292 ms (0.07×). Worst for our problem.
+Only build standalone HSACO and manual `hipModuleLaunchKernel` when necessary.
 
-## Tile size auto-tuning pattern
+### 5) Verify correctness and speed
 
-When uncertain about optimal tile sizes, **instantiate multiple template
-configurations and benchmark all of them at first invocation**:
+Always run:
 
-```cpp
-template<int TILE_W, int TILE_H, int TILE_IC>
-__global__ void my_kernel(...);
+1. correctness checks (`torch.testing.assert_close`)
+2. baseline comparison (`torch`, `torch.compile`, extension)
+3. confirm selected solver/algorithm in logs
 
-static const Config CFGS[] = {
-    {16, 16, 16, "16x16 TIC16"},
-    { 8, 32, 16, " 8x32 TIC16"},
-    {32, 16, 16, "32x16 TIC16"},
-    // ...
-};
+Report both kernel-time and end-to-end time.
 
-static int g_best = -1;
+## "联网找 SOTA 实现" Checklist
 
-// On first call: warm up + time all, cache best
-// On subsequent calls: dispatch to cached best
-extern "C" void launch_kernel(...) {
-    if (g_best < 0) g_best = auto_tune(...);
-    dispatch(g_best, ...);
-}
-```
+Copy and execute this checklist:
 
-Use `hipEventCreate/hipEventRecord/hipEventElapsedTime` for GPU-side timing.
-Run 3 reps after 1 warmup. Total tuning overhead: ~0.5–2 s (one-time cost).
+- [ ] Capture real kernel names via `hipprof`
+- [ ] Capture MIOpen solver/algorithm via logging
+- [ ] Reproduce with `MIOpenDriver`
+- [ ] Map solver -> upstream source files
+- [ ] Build extension path that calls the vendor-selected solver
+- [ ] Verify correctness (multi-run)
+- [ ] Compare performance vs PyTorch baseline
+- [ ] Keep final reproducible commands in notes
 
-## Practical recommendations for the agent
+## One-Shot Example (from real run)
 
-1. **Check the operation first**: if it's a standard Conv2d/ConvTranspose2d with
-   C ≥ 32 and spatial ≥ 128, expect speedup ≤ 0.15×. Write a correct kernel,
-   profile once, and stop. Do not spend steps trying to optimise further.
+Use this file as a one-shot integration reference:
 
-2. **Depthwise conv is the sweet spot**: one channel per group means vendor libs
-   have less to optimise. A simple thread-per-output-pixel kernel with shared
-   memory for the input patch typically wins.
+- `examples/conv_transpose2d_winograd_hconv677.hip`
 
-3. **For ConvTranspose2d stride=1**: use the gather formulation (output pixel
-   reads from input). Prefer Family B (all-OC fused, input in LDS) for large
-   spatial dimensions.
+What it demonstrates:
 
-4. **Always define `#define WARP_SIZE 64`** and use `__shfl_down(val, offset)`
-   (no mask) on Hygon K100 / AMD GPUs.
+- extension-side MIOpen handle/descriptor lifecycle
+- selecting and compiling solution id for target shape
+- immediate execution path for ConvTranspose2d-equivalent backward-data
 
-5. **When in doubt, auto-tune tile sizes** rather than guessing. Template
-   instantiation + runtime benchmarking is cheap and eliminates guesswork.
+## Practical Guidance
+
+- For large spatial standard conv/transposed-conv, handwritten scalar kernels usually lose to MIOpen Winograd/ImplicitGEMM paths.
+- For depthwise or unusual fused ops, custom kernels may still win.
+- If extension is slower than expected, check for:
+  - wrong class path being executed (stale model file, duplicate class definitions)
+  - Python overhead dominating (validate with direct extension call benchmark)
+  - wrong solution selected (inspect logs for `solution_id` and algorithm)
+
+## Anti-Patterns
+
+- Starting from tile-size tuning before identifying backend kernel.
+- Comparing only Python-level timing without kernel-level confirmation.
+- Treating profile alias names as exact source symbol names.
+- Claiming SOTA without reproducing vendor-driver command path.
