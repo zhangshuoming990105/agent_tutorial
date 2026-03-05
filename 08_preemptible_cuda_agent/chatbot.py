@@ -493,7 +493,7 @@ def do_compact(
     keep_recent = 6
     droppable = len(ctx.messages) - 1 - keep_recent
     if droppable < 4:
-        print(
+        log(
             f"  Not enough old messages to compact "
             f"({len(ctx.messages) - 1} total, need >{keep_recent + 3}).\n"
         )
@@ -502,23 +502,23 @@ def do_compact(
     before = ctx.get_context_tokens(overhead_tokens=current_overhead_tokens)
     before_local = ctx.estimate_messages_tokens_structured()
     old_messages = ctx.messages[1:-keep_recent]
-    print(f"  Compacting {len(old_messages)} old messages...")
+    log(f"  Compacting {len(old_messages)} old messages...")
 
     compacted = compact_messages(client, model, old_messages)
     if not compacted:
-        print("  Compaction failed - context unchanged.\n")
+        log("  Compaction failed - context unchanged.\n")
         return
 
     candidate_local = ctx.estimate_messages_tokens_structured(
         [ctx.messages[0]] + compacted + ctx.messages[-keep_recent:]
     )
     if candidate_local >= before_local:
-        print("  Compacted version is not smaller - skipped.\n")
+        log("  Compacted version is not smaller - skipped.\n")
         return
 
     replaced, new_count = ctx.apply_compacted_messages(compacted, keep_recent)
     after = ctx.get_context_tokens(overhead_tokens=current_overhead_tokens)
-    print(
+    log(
         f"  Replaced {replaced} messages with {new_count} compacted messages. "
         f"Context: ~{before:,} -> ~{after:,} tokens\n"
     )
@@ -533,21 +533,21 @@ def handle_slash_command(
 ) -> bool:
     cmd = command.strip().lower()
     if cmd == "/help":
-        print(f"\n{SLASH_COMMANDS_HELP}\n")
+        log(f"\n{SLASH_COMMANDS_HELP}\n")
         return True
     if cmd == "/task":
         task_dir = runtime_state.get("task_dir")
         task_src = runtime_state.get("task_context_source")
-        print("\nTask context:")
-        print(f"  task_dir: {task_dir if task_dir else '(none loaded)'}")
-        print(f"  workspace: {workspace_root_str()}")
-        print(f"  task_md: {task_src if task_src else '(none)'}")
-        print("  tip: /task load <specifier>  |  /task inject\n")
+        log("\nTask context:")
+        log(f"  task_dir: {task_dir if task_dir else '(none loaded)'}")
+        log(f"  workspace: {workspace_root_str()}")
+        log(f"  task_md: {task_src if task_src else '(none)'}")
+        log("  tip: /task load <specifier>  |  /task inject\n")
         return True
-    if cmd.startswith("/task load "):
-        spec = command.strip()[len("/task load "):].strip()
+    if cmd.startswith("/task load"):
+        spec = command.strip()[len("/task load"):].strip()
         if not spec:
-            print("\nUsage: /task load <specifier>\n")
+            log("\nUsage: /task load <specifier>\n")
             return True
         try:
             task_dir = resolve_task_path(spec)
@@ -557,7 +557,7 @@ def handle_slash_command(
             history_prompt = load_history_prompt(task_dir)
             task_prompt, task_src = load_task_prompt(task_dir)
         except Exception as e:
-            print(f"\nFailed to load task: {e}\n")
+            log(f"\nFailed to load task: {e}\n")
             return True
 
         runtime_state["task_dir"] = task_dir
@@ -567,41 +567,41 @@ def handle_slash_command(
 
         ctx.system_prompt = compose_system_prompt(history_prompt, task_prompt)
         ctx.clear()
-        print("\nTask loaded:")
-        print(f"  task_dir: {task_dir}")
-        print(f"  workspace: {workspace}")
-        print(f"  history: {'loaded' if history_prompt else 'none'}")
-        print(f"  task_md: {task_src if task_src else 'none'}")
-        print(f"\n{workspace_summary()}\n")
+        log("\nTask loaded:")
+        log(f"  task_dir: {task_dir}")
+        log(f"  workspace: {workspace}")
+        log(f"  history: {'loaded' if history_prompt else 'none'}")
+        log(f"  task_md: {task_src if task_src else 'none'}")
+        log(f"\n{workspace_summary()}\n")
         return True
     if cmd == "/task reload":
         task_dir = runtime_state.get("task_dir")
         if not task_dir:
-            print("\nNo active task. Use /task load <specifier> first.\n")
+            log("\nNo active task. Use /task load <specifier> first.\n")
             return True
         try:
             history_prompt = load_history_prompt(task_dir)
             task_prompt, task_src = load_task_prompt(task_dir)
         except Exception as e:
-            print(f"\nFailed to reload task context: {e}\n")
+            log(f"\nFailed to reload task context: {e}\n")
             return True
         runtime_state["history_prompt"] = history_prompt
         runtime_state["task_prompt"] = task_prompt
         runtime_state["task_context_source"] = str(task_src) if task_src else ""
         ctx.system_prompt = compose_system_prompt(history_prompt, task_prompt)
         ctx.clear()
-        print("\nTask context reloaded and conversation reset.")
-        print(f"  history: {'loaded' if history_prompt else 'none'}")
-        print(f"  task_md: {task_src if task_src else 'none'}\n")
+        log("\nTask context reloaded and conversation reset.")
+        log(f"  history: {'loaded' if history_prompt else 'none'}")
+        log(f"  task_md: {task_src if task_src else 'none'}\n")
         return True
     if cmd == "/task inject":
         task_dir = runtime_state.get("task_dir")
         if not task_dir:
-            print("\nNo active task. Use /task load <specifier> first.\n")
+            log("\nNo active task. Use /task load <specifier> first.\n")
             return True
         task_prompt, task_src = load_task_prompt(task_dir)
         if not task_prompt:
-            print("\nNo task.md/TASK.md found (or file is empty).\n")
+            log("\nNo task.md/TASK.md found (or file is empty).\n")
             return True
         runtime_state["task_prompt"] = task_prompt
         runtime_state["task_context_source"] = str(task_src) if task_src else ""
@@ -615,10 +615,10 @@ def handle_slash_command(
                 ),
             }
         )
-        print(f"\nInjected task context from: {task_src}\n")
+        log(f"\nInjected task context from: {task_src}\n")
         return True
     if cmd == "/tokens":
-        print(
+        log(
             "\n"
             + render_token_report(
                 ctx,
@@ -630,10 +630,10 @@ def handle_slash_command(
         )
         return True
     if cmd == "/history":
-        print(f"\n{ctx.format_history()}\n")
+        log(f"\n{ctx.format_history()}\n")
         return True
     if cmd == "/debug":
-        print(f"\n{ctx.format_debug()}\n")
+        log(f"\n{ctx.format_debug()}\n")
         return True
     if cmd == "/compact":
         overhead_tokens = estimate_schema_tokens(
@@ -645,131 +645,131 @@ def handle_slash_command(
         all_skill_names = sorted(runtime_state["skills"].keys())
         active = runtime_state.get("active_skill_names", [])
         pinned = sorted(runtime_state["pinned_skills"])
-        print("\nSkills:")
-        print(f"  Loaded:  {', '.join(all_skill_names) if all_skill_names else '(none)'}")
-        print(f"  Active:  {', '.join(active) if active else '(none)'}")
-        print(f"  Pinned:  {', '.join(pinned) if pinned else '(none)'}\n")
+        log("\nSkills:")
+        log(f"  Loaded:  {', '.join(all_skill_names) if all_skill_names else '(none)'}")
+        log(f"  Active:  {', '.join(active) if active else '(none)'}")
+        log(f"  Pinned:  {', '.join(pinned) if pinned else '(none)'}\n")
         return True
     if cmd.startswith("/skill "):
         parts = cmd.split()
         if len(parts) != 3:
-            print("\nUsage: /skill <name> on|off\n")
+            log("\nUsage: /skill <name> on|off\n")
             return True
         _, name, mode = parts
         if name not in runtime_state["skills"]:
-            print(f"\nUnknown skill: {name}\n")
+            log(f"\nUnknown skill: {name}\n")
             return True
         if mode == "on":
             runtime_state["pinned_skills"].add(name)
-            print(f"\nPinned skill: {name}\n")
+            log(f"\nPinned skill: {name}\n")
         elif mode == "off":
             runtime_state["pinned_skills"].discard(name)
-            print(f"\nUnpinned skill: {name}\n")
+            log(f"\nUnpinned skill: {name}\n")
         else:
-            print("\nUsage: /skill <name> on|off\n")
+            log("\nUsage: /skill <name> on|off\n")
         return True
     if cmd.startswith("/verbose"):
         parts = cmd.split()
         if len(parts) == 1:
             state = "on" if runtime_state["verbose"] else "off"
-            print(f"\nVerbose token diagnostics: {state}\n")
+            log(f"\nVerbose token diagnostics: {state}\n")
             return True
         arg = parts[1]
         if arg in ("on", "true", "1"):
             runtime_state["verbose"] = True
-            print("\nVerbose token diagnostics: on\n")
+            log("\nVerbose token diagnostics: on\n")
             return True
         if arg in ("off", "false", "0"):
             runtime_state["verbose"] = False
-            print("\nVerbose token diagnostics: off\n")
+            log("\nVerbose token diagnostics: off\n")
             return True
-        print("\nUsage: /verbose on|off\n")
+        log("\nUsage: /verbose on|off\n")
         return True
     if cmd.startswith("/shell-safe"):
         parts = cmd.split()
         if len(parts) == 1:
             state = "on" if runtime_state["safe_shell"] else "off"
-            print(f"\nSafe shell mode: {state}\n")
+            log(f"\nSafe shell mode: {state}\n")
             return True
         arg = parts[1]
         if arg in ("on", "true", "1"):
             runtime_state["safe_shell"] = True
             set_shell_safety(True)
-            print("\nSafe shell mode: on\n")
+            log("\nSafe shell mode: on\n")
             return True
         if arg in ("off", "false", "0"):
             runtime_state["safe_shell"] = False
             set_shell_safety(False)
-            print("\nSafe shell mode: off\n")
+            log("\nSafe shell mode: off\n")
             return True
-        print("\nUsage: /shell-safe on|off\n")
+        log("\nUsage: /shell-safe on|off\n")
         return True
     if cmd == "/shell-policy":
         snap = get_shell_policy_snapshot()
-        print("\nShell policy:")
-        print(f"  safe_mode: {snap['safe_mode']}")
-        print(f"  policy_file: {snap['policy_file']}")
-        print(f"  allowlist: {len(snap['allowlist'])} entries")
-        print(f"  denylist: {len(snap['denylist'])} entries")
+        log("\nShell policy:")
+        log(f"  safe_mode: {snap['safe_mode']}")
+        log(f"  policy_file: {snap['policy_file']}")
+        log(f"  allowlist: {len(snap['allowlist'])} entries")
+        log(f"  denylist: {len(snap['denylist'])} entries")
         if snap["allowlist"]:
-            print("  allowlist entries:")
+            log("  allowlist entries:")
             for x in snap["allowlist"]:
-                print(f"    - {x}")
+                log(f"    - {x}")
         if snap["denylist"]:
-            print("  denylist entries:")
+            log("  denylist entries:")
             for x in snap["denylist"]:
-                print(f"    - {x}")
-        print()
+                log(f"    - {x}")
+        log()
         return True
     if cmd == "/preempt":
         mode = "on" if runtime_state.get("preempt_shell_kill", False) else "off"
-        print("\nPreemption settings:")
-        print("  queue: enabled")
-        print("  soft_preempt: enabled")
-        print(f"  shell_kill_on_preempt: {mode}\n")
+        log("\nPreemption settings:")
+        log("  queue: enabled")
+        log("  soft_preempt: enabled")
+        log(f"  shell_kill_on_preempt: {mode}\n")
         return True
     if cmd.startswith("/preempt shell-kill"):
         parts = cmd.split()
         if len(parts) != 3:
-            print("\nUsage: /preempt shell-kill on|off\n")
+            log("\nUsage: /preempt shell-kill on|off\n")
             return True
         arg = parts[2]
         if arg in ("on", "true", "1"):
             runtime_state["preempt_shell_kill"] = True
             set_shell_interrupt_on_preempt(True)
-            print("\nPreemption shell-kill: on\n")
+            log("\nPreemption shell-kill: on\n")
             return True
         if arg in ("off", "false", "0"):
             runtime_state["preempt_shell_kill"] = False
             set_shell_interrupt_on_preempt(False)
-            print("\nPreemption shell-kill: off\n")
+            log("\nPreemption shell-kill: off\n")
             return True
-        print("\nUsage: /preempt shell-kill on|off\n")
+        log("\nUsage: /preempt shell-kill on|off\n")
         return True
     if cmd.startswith("/recovery"):
         parts = cmd.split()
         if len(parts) == 1:
             state = "on" if runtime_state.get("recovery_cleanup", True) else "off"
-            print("\nRecovery cleanup:")
-            print(f"  remove failed intermediate traces after success: {state}\n")
+            log("\nRecovery cleanup:")
+            log(f"  remove failed intermediate traces after success: {state}\n")
             return True
         arg = parts[1]
         if arg in ("on", "true", "1"):
             runtime_state["recovery_cleanup"] = True
-            print("\nRecovery cleanup: on\n")
+            log("\nRecovery cleanup: on\n")
             return True
         if arg in ("off", "false", "0"):
             runtime_state["recovery_cleanup"] = False
-            print("\nRecovery cleanup: off\n")
+            log("\nRecovery cleanup: off\n")
             return True
-        print("\nUsage: /recovery on|off\n")
+        log("\nUsage: /recovery on|off\n")
         return True
     if cmd == "/workspace":
-        print(f"\n{workspace_summary()}\n")
+        log(f"\n{workspace_summary()}\n")
         return True
     if cmd == "/clear":
         ctx.clear()
-        print("\nConversation cleared.\n")
+        log("\nConversation cleared.\n")
         return True
     return False
 
@@ -1073,6 +1073,7 @@ def chat(
                 user_input = pending_input
                 pending_input = None
             else:
+                log(">>> Ready for input.")
                 try:
                     event, text = _dequeue_user_input_blocking(user_queue)
                 except KeyboardInterrupt:
